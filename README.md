@@ -1,48 +1,88 @@
-![GitHub Repo stars](https://img.shields.io/github/stars/OpenBoard-org/openboard)
-![GitHub Repo forks](https://img.shields.io/github/forks/OpenBoard-org/openboard)
-# OpenBoard
-[![latest release](https://img.shields.io/github/v/release/OpenBoard-org/openboard.svg)]()
-[![Commits since last release](https://img.shields.io/github/commits-since/OpenBoard-org/openboard/v1.7.7/dev)]()
-[![Github Repo Contributors](https://img.shields.io/github/contributors/OpenBoard-org/openboard.svg)]()
-[![downloads v1.7.7](https://img.shields.io/github/downloads/OpenBoard-org/openboard/v1.7.7/total)]()
-[![Github All Releases](https://img.shields.io/github/downloads/OpenBoard-org/OpenBoard/total.svg)]()
+<p align="center"><img src="resources/classboard/classboard-256.png" width="96" alt="Logo ClassBoard"></p>
 
-OpenBoard is an open-source cross-platform interactive white board application designed primarily for use in schools. It was originally forked from Open-Sankoré, which was itself based on Uniboard.
+# ClassBoard
 
-### Installing
-1.7.7 installers are available for Windows, macOS and Debian on the [Downloads page](https://github.com/OpenBoard-org/OpenBoard/wiki/Downloads).
+**Tableau blanc interactif libre, gratuit et moderne pour les établissements scolaires.**
+Pensé pour remplacer Interwrite Workspace sur les TBI et vidéoprojecteurs interactifs
+(Epson et autres), sous Windows 10 et 11.
 
-### Supported platforms 
+ClassBoard est un *fork* d'[OpenBoard](https://github.com/OpenBoard-org/OpenBoard) 1.7.7 :
+il conserve son moteur d'écriture, ses documents, ses instruments de géométrie et
+l'annotation du bureau, et ajoute une interface modernisée, un profil par discipline
+et des outils de classe.
 
-| Version   | officially maintained platforms | branch |
-|------------|--------------------------------------------------------|----|
-| 1.7.7 (latest stable)     | Windows 10+, macOS 12+ (for both `x64_64` and `arm64`), Debian 12  | `master` |
-| 1.8.0 (active development)     | Windows 10+, macOS 12+ (for both `x64_64` and `arm64`), Debian 12 | `dev` |
+> 🇫🇷 Interface en français par défaut · hors connexion · sans compte · sans abonnement ·
+> sans télémétrie · sans droits administrateur · licence GPL-3.0
 
-### Community-driven packages
-On Linux, Debian is the only officially maintained platform. For other platforms, you can thank the awesome community of OpenBoard that provides community-driven packages on a number of other distributions. Check on [this page](https://github.com/OpenBoard-org/OpenBoard/wiki/Downloads) to see if you find what you're looking for. If you actually want to provide support and to be referenced on this page, please open an issue with the relevant information, and we'll be glad to add your contribution.
+## Ce que ClassBoard apporte
 
-### Building from source
-If you didn't find any installer for your platform, or if you want to modify OpenBoard, you can find instructions on how to build OpenBoard from source on the [wiki](https://github.com/OpenBoard-org/OpenBoard/wiki/Build-OpenBoard-from-source).
+| | |
+|---|---|
+| **Assistant de premier lancement** | L'enseignant choisit sa ou ses disciplines (15 au choix). ClassBoard propose les outils et favoris adaptés, sans rien cloisonner. |
+| **Barre de favoris** | Une barre verticale à gauche du tableau : règle, compas, minuteur, tirage au sort… selon les disciplines. Personnalisable. |
+| **Interface modernisée** | Style Fluent (Windows 11), icônes au trait, libellés sous les outils, gros boutons (100/125/150 %), thème clair ou sombre. |
+| **Outils de classe** | Nouveaux **Minuteur** et **Tirage au sort** (élève sans remise, groupes, dés), hors connexion. |
+| **Écriture scolaire** | Fonds **Seyès** activés, polices **Marelle** (cursive officielle de l'Éducation nationale) et **Écolier**. |
+| **Déploiement** | Installateur `.exe` (sans droits administrateur), `.msi` pour déploiement silencieux (Kwartz, GPO), version portable `.zip`. |
+| **Vie privée** | Aucune requête réseau automatique : la recherche de mises à jour vers les serveurs d'OpenBoard est désactivée. |
 
-### Qt support
-OpenBoard can be compiled with the latest open-source binaries of Qt 6. Support for Qt 5.15 was recently dropped, but you can still build OpenBoard with it, after addressing some minor compiling issues.
+Tout ce qu'OpenBoard sait faire reste disponible : stylo, surligneur, gomme, formes et
+reconnaissance de formes, texte, images, annuler/rétablir, pointeur laser, annotation du
+bureau Windows, import et annotation PDF, captures, multipage, fonds, audio/vidéo,
+masque/rideau/projecteur, instruments (règle, équerre, rapporteur, compas, repère),
+sauvegarde automatique, export PDF, impression, documents `.ubz` d'OpenBoard.
 
-### Contribute
-You can contribute to OpenBoard by helping on translations, creating new web widgets or improving existing ones, or by developing new features and submit them as pull requests.
+## Télécharger
 
-#### Code and tests
-Before changing the code, whether you are a person or an AI agent, read [AGENTS.md](AGENTS.md): what matters most for OpenBoard's users and how the code is changed. The conventions are in [CODING_STYLE.md](CODING_STYLE.md), and [docs/quality](docs/quality/README.md) describes how changes are checked and how release candidates are tested. Testing a release candidate in your own setting and reporting what you find is a valuable contribution too.
+Les versions publiées sont sur la page [Releases](https://github.com/rachid598/ClassBoard/releases).
+Chaque compilation de la branche de développement produit aussi des artefacts dans
+[GitHub Actions](https://github.com/rachid598/ClassBoard/actions).
 
-#### Translations
-OpenBoard is available, thanks to the work of its community, in 35 languages. If you want to contribute to OpenBoard or its dedicated website by adding a new language or updating an existing one, your help will be greatly appreciated.
+| Fichier | Pour qui |
+|---|---|
+| `ClassBoard-Setup-x64.exe` | Installation sur un poste. Sans droits administrateur par défaut. |
+| `ClassBoard-Setup-x64.msi` | Déploiement silencieux sur un parc (Kwartz, GPO). |
+| `ClassBoard-Portable-x64.zip` | Clé USB, poste verrouillé : décompresser et lancer. |
+| `SHA256SUMS.txt` | Sommes de contrôle. |
 
-If you don't know how to do it, you can ask for help here : [Discussions](https://github.com/OpenBoard-org/OpenBoard/discussions). Don't hesitate!
+Installation silencieuse : voir [docs/utilisateur/deploiement.md](docs/utilisateur/deploiement.md).
 
-#### Web Widgets
+> ⚠️ **Les exécutables ne sont pas signés** (pas de certificat de signature de code).
+> Windows SmartScreen peut afficher un avertissement : « Informations complémentaires »
+> puis « Exécuter quand même ». Vérifiez la somme SHA-256 en cas de doute.
 
-Web Widgets are websites that you can place and use directly on the board ! And to turn a website to an OpenBoard web widget is really simple !
+## Documentation
 
-Download and install OpenBoard, then develop your web app in it. You'll even find a web inspector to help you debug your site.
+- [Guide de l'enseignant](docs/utilisateur/README.md)
+- [Déploiement en établissement (Kwartz, MSI, portable)](docs/utilisateur/deploiement.md)
+- [Documentation technique](docs/technique/README.md) — compilation, CI, modules
+- [ARCHITECTURE.md](ARCHITECTURE.md) — choix techniques et audit des projets de référence
+- [ROADMAP.md](ROADMAP.md) · [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
+- [HANDOVER.md](HANDOVER.md) — état du projet pour reprendre le développement
 
-You'll find documentation on how to create a Web Widget from scratch or turn your already built website into an OpenBoard Web Widget [here](https://github.com/OpenBoard-org/OpenBoard/wiki/Creating-Web-Widgets).
+## Compiler
+
+Aucune compilation locale n'est nécessaire : GitHub Actions compile et empaquette
+ClassBoard pour Windows à chaque modification. Pour compiler soi-même :
+
+- **Windows** (Qt 6.8 MSVC 2022) : `scripts/windows/build.ps1`, puis `deploy.ps1` et `package.ps1`
+- **Linux** (contrôle et tests) :
+  ```bash
+  cmake -S . -B build -G Ninja -DQT_VERSION=6 -DCLASSBOARD_BUILD_TESTS=ON
+  cmake --build build && ctest --test-dir build
+  ```
+
+Détails : [docs/technique/README.md](docs/technique/README.md).
+
+## Licence et crédits
+
+ClassBoard est distribué sous **GNU GPL version 3** (voir [LICENSE](LICENSE)), avec
+l'exception de liaison OpenSSL héritée d'OpenBoard (voir [COPYRIGHT](COPYRIGHT)).
+
+- Basé sur **OpenBoard** © Open Education Foundation et contributeurs, lui-même issu
+  d'**Open-Sankoré** (© GIP ENA) et d'**Uniboard** (© Mnemis SA).
+- Polices **Marelle** © Ministère de l'Éducation nationale (OFL-1.1) et **Écolier Court**
+  © Jean-Marie Douteau (OFL-1.1), reprises d'[Open-Sankoré Community Edition](https://github.com/davidguyomarch/Sankore).
+- Icônes, assistant, profil, widgets Minuteur et Tirage au sort : contributeurs ClassBoard (GPL-3.0).
+
+ClassBoard n'est ni affilié ni approuvé par l'Open Education Foundation ou Epson.

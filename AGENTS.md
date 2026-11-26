@@ -1,3 +1,25 @@
+# Travailler sur ClassBoard (agents IA et développeurs)
+
+ClassBoard est un fork d'OpenBoard 1.7.7. **Lisez d'abord [HANDOVER.md](HANDOVER.md)**
+(état du projet, prochaines étapes), puis [ARCHITECTURE.md](ARCHITECTURE.md).
+Les règles d'OpenBoard ci-dessous s'appliquent aussi à ClassBoard.
+
+Règles propres à ClassBoard :
+
+- **Nouveau code dans `src/classboard/`.** Dans le moteur OpenBoard, retouches courtes et
+  marquées `// ClassBoard :`, pour garder les fusions avec `upstream` faciles.
+- **Langue** : interface et documentation en français ; chaînes visibles dans `tr()`.
+- **Aucun accès réseau** non déclenché par l'utilisateur, aucune télémétrie, aucune
+  dépendance téléchargée à l'exécution.
+- **Licences** : toute ressource reprise doit être compatible GPL-3.0 ; indiquer sa
+  provenance (README, ARCHITECTURE ou fichier de licence à côté de la ressource).
+- **Vérifier** : `cmake --build build && ctest --test-dir build` sous Linux ; la CI
+  Windows (`.github/workflows/build.yml`) doit être verte avant de considérer une
+  tâche terminée. Ne jamais prétendre avoir testé sur un TBI réel.
+- **Tenir à jour** `HANDOVER.md` et `CHANGELOG.md` à chaque étape importante.
+
+---
+
 # Working on OpenBoard
 
 This is the entry point for anyone changing OpenBoard, people and AI agents alike. Read it before your first change, then the documents it links to when your task concerns them:
