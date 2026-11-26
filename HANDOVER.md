@@ -48,7 +48,15 @@ Artifact claude.ai (privé, propriétaire du dépôt).
 
 Workflow `Build` (`.github/workflows/build.yml`) : https://github.com/rachid598/ClassBoard/actions
 
-- **Première exécution Windows entièrement verte : run n°3** (commit `2e0aebc`, 26/11/2026) :
+- **Référence actuelle : run n°10** (commit `fc9c23f`, 26/11/2026) — **Windows ✓ et Linux ✓**,
+  y compris les tests de démarrage avec le profil par défaut et le profil
+  `tests/profiles/sombre-sans-libelles.ini`. Artefact `ClassBoard-0.1.0-windows-x64`
+  (expire le 26/12/2026) : `ClassBoard-Setup-x64.exe` 146 Mo, `ClassBoard-Setup-x64.msi`
+  159 Mo, `ClassBoard-Portable-x64.zip` 198 Mo, `SHA256SUMS.txt`.
+- **Tag `v0.1.0` non publié** : le proxy git de la session de développement n'autorise que
+  la branche de travail. Le tag existe localement ; à créer par le propriétaire du dépôt
+  (voir §6) pour déclencher la Release automatique.
+- Première exécution Windows entièrement verte : run n°3 (commit `2e0aebc`, 26/11/2026) :
   Qt 6.8.3 ✓, compilation Release x64 (~7 min avec jom) ✓, assemblage ✓,
   **test de démarrage ✓** (ClassBoard.exe actif 25 s sur le runner Windows),
   Inno Setup ✓, WiX 5 ✓, zip ✓, SHA256 ✓, artefact ✓ (≈ 524 Mo pour les 3 paquets).
@@ -83,13 +91,15 @@ Corrections déjà faites :
 
 ## 6. Prochaines étapes conseillées (par priorité)
 
-1. Faire passer la CI Windows au vert si ce n'est pas le cas, télécharger l'artefact,
-   **tester sur un vrai poste Windows** puis sur un TBI.
-2. Publier `v0.1.0` (tag) une fois validé → Release automatique.
-3. Choix du dossier des documents (lecteur réseau Kwartz) dans « Mon profil ».
-4. Barre de favoris en mode bureau.
-5. Fichier `resources/i18n/ClassBoard_en.ts` pour l'anglais.
-6. Modules disciplinaires web (voir ROADMAP.md §0.3).
+1. Télécharger l'artefact du run n°10, **tester sur un vrai poste Windows** puis sur un TBI.
+2. Publier `v0.1.0` : GitHub › Releases › *Draft a new release* › tag `v0.1.0` sur la branche
+   `claude/gifted-turing-1gc7gi` › *Publish* (ou `git tag v0.1.0 && git push origin v0.1.0`).
+   Le workflow se déclenche sur le tag et joint les 4 fichiers à la Release.
+3. Envisager de renommer la branche de travail en `main` (branche par défaut).
+4. Choix du dossier des documents (lecteur réseau Kwartz) dans « Mon profil ».
+5. Barre de favoris en mode bureau.
+6. Fichier `resources/i18n/ClassBoard_en.ts` pour l'anglais.
+7. Modules disciplinaires web (voir ROADMAP.md §0.3).
 
 ## 7. Commandes utiles
 
