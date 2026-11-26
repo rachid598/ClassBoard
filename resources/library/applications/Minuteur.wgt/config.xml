@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:ub="http://uniboard.mnemis.com/widgets"
+        id="classboard.minuteur"
+        version="1.0"
+        width="360"
+        height="330"
+        ub:resizable="true">
+
+    <name>Minuteur</name>
+    <author>Contributeurs ClassBoard</author>
+    <description>Compte à rebours pour la classe, avec durées prédéfinies et signal sonore. Fonctionne hors connexion.</description>
+    <license href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</license>
+
+    <content src="index.html"/>
+</widget>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!--
+  ClassBoard — Minuteur (compte à rebours pour la classe)
+  Copyright (C) 2026 Contributeurs ClassBoard — GPL-3.0
+  Application autonome : aucune ressource réseau.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Minuteur</title>
+<style>
+  :root {
+    --bg: #FFFFFF; --text: #1A1A1A; --muted: #5C5C5C; --border: #E1E4E8;
+    --soft: #F1F3F6; --accent: #005FB8; --accent-soft: #E5EFFB; --warn: #C2410C; --ring: #DCE3EC;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: transparent; }
+  body {
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; color: var(--text);
+    -webkit-user-select: none; user-select: none;
+  }
+  .card {
+    height: 100%; padding: 14px 16px 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .top { display: flex; align-items: center; justify-content: space-between; }
+  .title { font-size: 14px; font-weight: 600; color: var(--muted); }
+  .presets { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    min-width: 46px; height: 34px; padding: 0 10px; border-radius: 17px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .center { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 120px; }
+  svg.ring { position: absolute; width: 100%; height: 100%; }
+  .digits {
+    font-size: clamp(40px, 22vmin, 96px); font-weight: 700; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums; z-index: 1; cursor: pointer;
+  }
+  .digits.done { color: var(--warn); animation: blink 0.6s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0.25; } }
+  .controls { display: flex; gap: 8px; }
+  .btn {
+    flex: 1; height: 48px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+  .btn.small { flex: 0 0 56px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  .btn:active { transform: translateY(1px); }
+  .sound { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+  .sound input { width: 18px; height: 18px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <span class="title">Minuteur</span>
+    <label class="sound"><input type="checkbox" id="sound" checked> Son</label>
+  </div>
+
+  <div class="presets" role="group" aria-label="Durées prédéfinies" id="presets"></div>
+
+  <div class="center">
+    <svg class="ring" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <circle cx="100" cy="100" r="88" fill="none" stroke="var(--ring)" stroke-width="10"></circle>
+      <circle id="progress" cx="100" cy="100" r="88" fill="none" stroke="var(--accent)" stroke-width="10"
+              stroke-linecap="round" transform="rotate(-90 100 100)"></circle>
+    </svg>
+    <div class="digits" id="digits" role="timer" aria-live="off" title="Cliquer pour démarrer ou mettre en pause">05:00</div>
+  </div>
+
+  <div class="controls">
+    <button class="btn small" id="minus" aria-label="Retirer une minute">−1</button>
+    <button class="btn primary" id="start">Démarrer</button>
+    <button class="btn small" id="plus" aria-label="Ajouter une minute">+1</button>
+    <button class="btn small" id="reset" aria-label="Réinitialiser">↺</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var PRESETS = [1, 2, 3, 5, 10, 15, 20];
+  var CIRC = 2 * Math.PI * 88;
+
+  var duration = 5 * 60;      // durée choisie (s)
+  var remaining = duration;   // temps restant (s)
+  var endAt = 0;              // horodatage de fin quand le minuteur tourne
+  var timer = null;
+  var finished = false;
+
+  var digits = document.getElementById("digits");
+  var progress = document.getElementById("progress");
+  var startBtn = document.getElementById("start");
+  var presets = document.getElementById("presets");
+  var sound = document.getElementById("sound");
+
+  progress.setAttribute("stroke-dasharray", CIRC.toFixed(1));
+
+  function savePreference(key, value) {
+    try { if (window.sankore && window.sankore.setPreference) window.sankore.setPreference(key, String(value)); } catch (e) {}
+  }
+
+  function loadPreference(key, fallback) {
+    try {
+      if (window.sankore && window.sankore.async && window.sankore.async.preference)
+        return window.sankore.async.preference(key, String(fallback));
+      if (window.sankore && window.sankore.preference)
+        return Promise.resolve(window.sankore.preference(key, String(fallback)));
+    } catch (e) {}
+    return Promise.resolve(String(fallback));
+  }
+
+  function format(seconds) {
+    seconds = Math.max(0, Math.ceil(seconds));
+    var h = Math.floor(seconds / 3600);
+    var m = Math.floor((seconds % 3600) / 60);
+    var s = seconds % 60;
+    var mm = (m < 10 ? "0" : "") + m;
+    var ss = (s < 10 ? "0" : "") + s;
+    return h > 0 ? h + ":" + mm + ":" + ss : mm + ":" + ss;
+  }
+
+  function render() {
+    digits.textContent = format(remaining);
+    var ratio = duration > 0 ? remaining / duration : 0;
+    progress.setAttribute("stroke-dashoffset", (CIRC * (1 - ratio)).toFixed(1));
+    progress.setAttribute("stroke", remaining <= 10 && remaining > 0 ? "var(--warn)" : "var(--accent)");
+    digits.classList.toggle("done", finished);
+    startBtn.textContent = timer ? "Pause" : (finished ? "Recommencer" : (remaining < duration ? "Reprendre" : "Démarrer"));
+
+    var buttons = presets.querySelectorAll("button");
+    for (var i = 0; i < buttons.length; i++)
+      buttons[i].setAttribute("aria-pressed", String(Number(buttons[i].dataset.minutes) * 60 === duration));
+  }
+
+  function beep(times) {
+    if (!sound.checked) return;
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      var ctx = new Ctx();
+      for (var i = 0; i < times; i++) {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        var t = ctx.currentTime + i * 0.45;
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.4, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t); osc.stop(t + 0.4);
+      }
+    } catch (e) {}
+  }
+
+  function tick() {
+    remaining = (endAt - Date.now()) / 1000;
+    if (remaining <= 0) {
+      remaining = 0;
+      stop();
+      finished = true;
+      beep(3);
+    }
+    render();
+  }
+
+  function start() {
+    if (finished || remaining <= 0) { remaining = duration; finished = false; }
+    if (remaining <= 0) return;
+    endAt = Date.now() + remaining * 1000;
+    timer = setInterval(tick, 200);
+    render();
+  }
+
+  function stop() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  function toggle() {
+    if (timer) { stop(); remaining = Math.ceil(remaining); render(); }
+    else start();
+  }
+
+  function setDuration(seconds) {
+    stop();
+    duration = Math.max(10, Math.min(seconds, 3 * 3600));
+    remaining = duration;
+    finished = false;
+    savePreference("duration", duration);
+    render();
+  }
+
+  function adjust(delta) {
+    if (timer) {
+      endAt = Math.max(Date.now() + 1000, endAt + delta * 1000);
+      duration = Math.max(duration + delta, 10);
+      tick();
+    } else {
+      setDuration((finished ? duration : remaining) + delta);
+    }
+  }
+
+  PRESETS.forEach(function (minutes) {
+    var b = document.createElement("button");
+    b.className = "chip";
+    b.dataset.minutes = minutes;
+    b.textContent = minutes + " min";
+    b.addEventListener("click", function () { setDuration(minutes * 60); });
+    presets.appendChild(b);
+  });
+
+  startBtn.addEventListener("click", toggle);
+  digits.addEventListener("click", toggle);
+  document.getElementById("plus").addEventListener("click", function () { adjust(60); });
+  document.getElementById("minus").addEventListener("click", function () { adjust(-60); });
+  document.getElementById("reset").addEventListener("click", function () { setDuration(duration); });
+  document.addEventListener("keydown", function (e) {
+    if (e.code === "Space") { e.preventDefault(); toggle(); }
+  });
+
+  loadPreference("duration", 300).then(function (value) {
+    var v = parseInt(value, 10);
+    setDuration(isNaN(v) ? 300 : v);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

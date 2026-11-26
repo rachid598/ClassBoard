@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<!--
+  ClassBoard — Tirage au sort (élève, groupes, dé)
+  Copyright (C) 2026 Contributeurs ClassBoard — GPL-3.0
+  Application autonome : aucune ressource réseau. Les prénoms restent dans
+  le document ClassBoard (préférences du widget), jamais envoyés ailleurs.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tirage au sort</title>
+<style>
+  :root {
+    --bg: #FFFFFF; --text: #1A1A1A; --muted: #5C5C5C; --border: #E1E4E8; --soft: #F1F3F6;
+    --accent: #005FB8; --accent-soft: #E5EFFB; --ok: #188038;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: transparent; }
+  body { font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; color: var(--text); }
+  .card {
+    height: 100%; padding: 14px 16px 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 18px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .tabs { display: flex; gap: 6px; padding: 3px; background: var(--soft); border-radius: 12px; }
+  .tab {
+    flex: 1; height: 38px; border: 0; border-radius: 9px; background: transparent; color: var(--muted);
+    font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .tab[aria-selected="true"] { background: var(--bg); color: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+  .panel { flex: 1; display: none; flex-direction: column; gap: 10px; min-height: 0; }
+  .panel.active { display: flex; }
+  textarea {
+    flex: 1; min-height: 70px; resize: none; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px;
+    font: inherit; font-size: 14px; line-height: 1.4; color: var(--text);
+  }
+  .result {
+    min-height: 72px; display: flex; align-items: center; justify-content: center; text-align: center;
+    border-radius: 14px; background: var(--accent-soft); color: var(--accent);
+    font-size: clamp(24px, 8vmin, 44px); font-weight: 700; padding: 8px; word-break: break-word;
+  }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    height: 46px; padding: 0 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  .btn.primary { flex: 1; background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  .muted { font-size: 13px; color: var(--muted); }
+  label.check { display: flex; gap: 6px; align-items: center; font-size: 14px; }
+  label.check input { width: 18px; height: 18px; }
+  select, input[type=number] {
+    height: 40px; border: 1px solid var(--border); border-radius: 10px; padding: 0 8px; font: inherit; font-size: 15px;
+  }
+  .groups { flex: 1; overflow: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
+  .group { border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; font-size: 14px; }
+  .group b { display: block; color: var(--accent); margin-bottom: 4px; }
+  .dice { flex: 1; display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .die {
+    width: 96px; height: 96px; border-radius: 20px; border: 3px solid var(--text); display: flex; align-items: center;
+    justify-content: center; font-size: 48px; font-weight: 700; background: var(--bg);
+  }
+  .rolling { animation: shake .35s ease-in-out; }
+  @keyframes shake { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-12deg) } 75% { transform: rotate(12deg) } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="tabs" role="tablist" aria-label="Type de tirage">
+    <button class="tab" role="tab" data-panel="eleve" aria-selected="true">Élève</button>
+    <button class="tab" role="tab" data-panel="groupes" aria-selected="false">Groupes</button>
+    <button class="tab" role="tab" data-panel="de" aria-selected="false">Dé</button>
+  </div>
+
+  <!-- Élève -->
+  <section class="panel active" id="eleve" role="tabpanel">
+    <div class="result" id="studentResult" aria-live="polite">Prêt !</div>
+    <textarea id="names" aria-label="Liste des élèves, un prénom par ligne" placeholder="Un prénom par ligne…"></textarea>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="noRepeat" checked> Sans remise</label>
+      <span class="muted" id="remaining"></span>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="drawStudent">Tirer un élève</button>
+      <button class="btn" id="resetStudents" title="Remettre tous les élèves dans le tirage">↺</button>
+    </div>
+  </section>
+
+  <!-- Groupes -->
+  <section class="panel" id="groupes" role="tabpanel">
+    <div class="row">
+      <select id="groupMode" aria-label="Mode de constitution">
+        <option value="count">Nombre de groupes</option>
+        <option value="size">Élèves par groupe</option>
+      </select>
+      <input type="number" id="groupValue" min="1" max="30" value="4" aria-label="Valeur">
+      <button class="btn primary" id="makeGroups">Former les groupes</button>
+    </div>
+    <div class="groups" id="groupsResult"><span class="muted">Les prénoms de l'onglet « Élève » sont utilisés.</span></div>
+  </section>
+
+  <!-- Dé -->
+  <section class="panel" id="de" role="tabpanel">
+    <div class="row">
+      <select id="diceCount" aria-label="Nombre de dés">
+        <option value="1">1 dé</option>
+        <option value="2">2 dés</option>
+        <option value="3">3 dés</option>
+      </select>
+      <select id="diceFaces" aria-label="Nombre de faces">
+        <option value="6">6 faces</option>
+        <option value="10">10 faces</option>
+        <option value="12">12 faces</option>
+        <option value="20">20 faces</option>
+      </select>
+      <span class="muted" id="diceTotal"></span>
+    </div>
+    <div class="dice" id="dice"></div>
+    <button class="btn primary" id="roll">Lancer</button>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var drawn = [];
+
+  // Hasard non biaisé (crypto si disponible)
+  function randomInt(max) {
+    if (window.crypto && window.crypto.getRandomValues) {
+      var a = new Uint32Array(1), limit = Math.floor(0x100000000 / max) * max;
+      do { window.crypto.getRandomValues(a); } while (a[0] >= limit);
+      return a[0] % max;
+    }
+    return Math.floor(Math.random() * max);
+  }
+
+  function shuffle(list) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) { var j = randomInt(i + 1); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  function names() {
+    return $("names").value.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
+  function savePreference(key, value) {
+    try { if (window.sankore && window.sankore.setPreference) window.sankore.setPreference(key, value); } catch (e) {}
+  }
+
+  function loadPreference(key, fallback) {
+    try {
+      if (window.sankore && window.sankore.async && window.sankore.async.preference)
+        return window.sankore.async.preference(key, fallback);
+      if (window.sankore && window.sankore.preference)
+        return Promise.resolve(window.sankore.preference(key, fallback));
+    } catch (e) {}
+    return Promise.resolve(fallback);
+  }
+
+  function updateRemaining() {
+    var all = names();
+    var left = $("noRepeat").checked ? all.filter(function (n) { return drawn.indexOf(n) < 0; }).length : all.length;
+    $("remaining").textContent = all.length ? left + " / " + all.length + " restant(s)" : "Ajoutez des prénoms ci-dessous";
+  }
+
+  // --- Onglets --------------------------------------------------------
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (tab) {
+    tab.addEventListener("click", function () {
+      Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
+        t.setAttribute("aria-selected", String(t === tab));
+      });
+      Array.prototype.forEach.call(document.querySelectorAll(".panel"), function (p) {
+        p.classList.toggle("active", p.id === tab.dataset.panel);
+      });
+    });
+  });
+
+  // --- Élève ----------------------------------------------------------
+  $("drawStudent").addEventListener("click", function () {
+    var all = names();
+    if (!all.length) { $("studentResult").textContent = "Aucun prénom"; return; }
+
+    var pool = $("noRepeat").checked ? all.filter(function (n) { return drawn.indexOf(n) < 0; }) : all;
+    if (!pool.length) { $("studentResult").textContent = "Tout le monde est passé !"; return; }
+
+    var winner = pool[randomInt(pool.length)];
+    var steps = 12, i = 0;
+    var spin = setInterval(function () {
+      $("studentResult").textContent = pool[randomInt(pool.length)];
+      if (++i >= steps) {
+        clearInterval(spin);
+        $("studentResult").textContent = winner;
+        drawn.push(winner);
+        updateRemaining();
+      }
+    }, 60);
+  });
+
+  $("resetStudents").addEventListener("click", function () {
+    drawn = [];
+    $("studentResult").textContent = "Prêt !";
+    updateRemaining();
+  });
+
+  $("names").addEventListener("input", function () {
+    savePreference("names", $("names").value);
+    updateRemaining();
+  });
+  $("noRepeat").addEventListener("change", updateRemaining);
+
+  // --- Groupes --------------------------------------------------------
+  $("makeGroups").addEventListener("click", function () {
+    var all = shuffle(names());
+    var out = $("groupsResult");
+    out.innerHTML = "";
+    if (!all.length) { out.innerHTML = '<span class="muted">Ajoutez des prénoms dans l\'onglet « Élève ».</span>'; return; }
+
+    var value = Math.max(1, parseInt($("groupValue").value, 10) || 1);
+    var count = $("groupMode").value === "count" ? Math.min(value, all.length) : Math.ceil(all.length / value);
+    var groups = [];
+    for (var g = 0; g < count; g++) groups.push([]);
+    all.forEach(function (n, i) { groups[i % count].push(n); });
+
+    groups.forEach(function (members, i) {
+      var div = document.createElement("div");
+      div.className = "group";
+      var title = document.createElement("b");
+      title.textContent = "Groupe " + (i + 1);
+      div.appendChild(title);
+      members.forEach(function (m) { var s = document.createElement("div"); s.textContent = m; div.appendChild(s); });
+      out.appendChild(div);
+    });
+  });
+
+  // --- Dé ---------------------------------------------------------------
+  function renderDice(values) {
+    var box = $("dice");
+    box.innerHTML = "";
+    values.forEach(function (v) {
+      var d = document.createElement("div");
+      d.className = "die rolling";
+      d.textContent = v;
+      box.appendChild(d);
+    });
+    $("diceTotal").textContent = values.length > 1 ? "Total : " + values.reduce(function (a, b) { return a + b; }, 0) : "";
+  }
+
+  $("roll").addEventListener("click", function () {
+    var count = parseInt($("diceCount").value, 10), faces = parseInt($("diceFaces").value, 10);
+    var values = [];
+    for (var i = 0; i < count; i++) values.push(randomInt(faces) + 1);
+    renderDice(values);
+  });
+
+  renderDice(["?"]);
+
+  loadPreference("names", "").then(function (value) {
+    $("names").value = value || "";
+    updateRemaining();
+  });
+})();
+</script>
+</body>
+</html>
