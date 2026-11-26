@@ -1,4 +1,4 @@
-TARGET = "OpenBoard"
+TARGET = "ClassBoard"
 TEMPLATE = app
 
 CONFIG += c++17
@@ -60,6 +60,7 @@ include(src/tools/tools.pri)
 include(src/desktop/desktop.pri)
 include(src/web/web.pri)
 include(src/singleapplication/singleapplication.pri)
+include(src/classboard/classboard.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 
 DEPENDPATH += src/pdf-merger

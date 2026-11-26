@@ -47,6 +47,10 @@
 #include "gui/UBActionPalette.h"
 #include "gui/UBBackgroundPalette.h"
 #include "gui/UBFavoriteToolPalette.h"
+
+#include "classboard/ClassBoardFavoritesPalette.h"
+#include "classboard/ClassBoardProfile.h"
+#include "classboard/ClassBoardSetupDialog.h"
 #include "gui/UBStartupHintsPalette.h"
 #include "gui/UBPageNavigationWidget.h"
 
@@ -239,6 +243,11 @@ void UBBoardPaletteManager::setupPalettes()
     mStylusPalette = new UBStylusPalette(mContainer, UBSettings::settings()->appToolBarOrientationVertical->get().toBool() ? Qt::Vertical : Qt::Horizontal);
     connect(mStylusPalette, SIGNAL(stylusToolDoubleClicked(int)), UBApplication::boardController, SLOT(stylusToolDoubleClicked(int)));
     mStylusPalette->show(); // always show stylus palette at startup
+
+    // ClassBoard : barre des outils favoris (selon les disciplines)
+    mFavoritesPalette = new ClassBoardFavoritesPalette(mContainer);
+    connect(mFavoritesPalette, &ClassBoardFavoritesPalette::editRequested, this, &UBBoardPaletteManager::showClassBoardProfile);
+    mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar());
 
     mZoomPalette = new UBZoomPalette(mContainer);
 
@@ -523,6 +532,9 @@ void UBBoardPaletteManager::containerResized()
         mStylusPalette->initPosition();
     }
 
+    if (mFavoritesPalette)
+        mFavoritesPalette->placeInContainer(QRect(userLeft, userTop, userWidth, userHeight));
+
     if(mZoomPalette)
     {
         mZoomPalette->move(userLeft + userWidth - mZoomPalette->width()
@@ -717,6 +729,12 @@ void UBBoardPaletteManager::changeMode(eUBDockPaletteWidgetMode newMode, bool is
                     mRightPalette->setAdditionalVOffset(0);
 #endif
 
+                if (mFavoritesPalette)
+                {
+                    mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar());
+                    mLeftPalette->stackUnder(mFavoritesPalette);
+                }
+
                 if( !isInit )
                     containerResized();
                 if (mWebToolsCurrentPalette)
@@ -730,6 +748,9 @@ void UBBoardPaletteManager::changeMode(eUBDockPaletteWidgetMode newMode, bool is
                 mLeftPalette->assignParent((QWidget*)UBApplication::applicationController->uninotesController()->drawingView());
                 mRightPalette->assignParent((QWidget*)UBApplication::applicationController->uninotesController()->drawingView());
                 mStylusPalette->raise();
+
+                if (mFavoritesPalette)
+                    mFavoritesPalette->hide();
 
                 if (UBPlatformUtils::hasVirtualKeyboard()
                     && mKeyboardPalette != NULL
@@ -1037,5 +1058,24 @@ void UBBoardPaletteManager::stopDownloads()
         mDownloadInProgress = false;
         mpDownloadWidget->setVisibleState(false);
         mRightPalette->removeTab(mpDownloadWidget);
+    }
+}
+
+
+void UBBoardPaletteManager::showClassBoardProfile()
+{
+    ClassBoardSetupDialog dialog(ClassBoardSetupDialog::Mode::Settings, UBApplication::mainWindow);
+
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    if (mFavoritesPalette)
+    {
+        mFavoritesPalette->reload();
+        mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar()
+                                      && UBApplication::applicationController
+                                      && UBApplication::applicationController->displayMode() == UBApplicationController::Board
+                                      && !UBApplication::applicationController->isShowingDesktop());
+        containerResized();
     }
 }

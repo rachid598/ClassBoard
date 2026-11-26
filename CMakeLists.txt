@@ -45,6 +45,7 @@ add_compile_definitions(UBVERSION="${VERSION}")
 # ==========================================================================
 
 set(QT_VERSION "" CACHE STRING "Qt major version number to use - empty, 5 or 6")
+option(CLASSBOARD_BUILD_TESTS "Compiler les tests automatisés de ClassBoard" OFF)
 
 # Internal setting
 set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication - do not change")
@@ -54,7 +55,7 @@ set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleAp
 # Non-source file locations
 # ==========================================================================
 
-set(OPENBOARD_QRC_FILE      resources/OpenBoard.qrc)
+set(OPENBOARD_QRC_FILE      resources/OpenBoard.qrc resources/classboard/classboard.qrc)
 
 set(OPENBOARD_FORMS_DIR     resources/forms src/web/simplebrowser)
 set(OPENBOARD_TS_DIR        resources/i18n)
@@ -63,8 +64,8 @@ set(OPENBOARD_ETC_DIR       resources/etc)
 set(OPENBOARD_LIBRARY_DIR   resources/library)
 set(OPENBOARD_STARTUP_HINTS resources/startupHints)
 
-set(OPENBOARD_ETC_FILE      ${OPENBOARD_ETC_DIR}/OpenBoard.config
-                            ${OPENBOARD_ETC_DIR}/OpenBoard.css
+set(OPENBOARD_ETC_FILE      ${OPENBOARD_ETC_DIR}/ClassBoard.config
+                            ${OPENBOARD_ETC_DIR}/ClassBoard.css
                             ${OPENBOARD_ETC_DIR}/widgets.md5sum)
 set(OPENBOARD_TEMPLATE_FILE ${OPENBOARD_ETC_DIR}/asyncAPI.js
                             ${OPENBOARD_ETC_DIR}/intranet-podcast-metadata.template
@@ -106,6 +107,7 @@ endif()
 # ==========================================================================
 
 add_executable(${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME classboard)
 
 # manage dependencies
 include(cmake/DependencyQt.cmake)
@@ -139,6 +141,7 @@ add_subdirectory(src/podcast)
 add_subdirectory(src/singleapplication)
 add_subdirectory(src/tools)
 add_subdirectory(src/web)
+add_subdirectory(src/classboard)
 add_subdirectory(plugins/cffadaptor/src)
 add_subdirectory(resources/forms)
 
@@ -246,3 +249,13 @@ set(CPACK_RPM_PACKAGE_SUGGESTS onboard)
 
 # create packager
 include(CPack)
+
+
+# ==========================================================================
+# ClassBoard : tests automatisés
+# ==========================================================================
+
+if(CLASSBOARD_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

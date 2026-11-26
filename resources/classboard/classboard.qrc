@@ -1,0 +1,25 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/classboard">
+    <file>disciplines/anglais.svg</file>
+    <file>disciplines/arts-plastiques.svg</file>
+    <file>disciplines/autre.svg</file>
+    <file>disciplines/eps.svg</file>
+    <file>disciplines/francais.svg</file>
+    <file>disciplines/general.svg</file>
+    <file>disciplines/histoire-geo.svg</file>
+    <file>disciplines/langues.svg</file>
+    <file>disciplines/math.svg</file>
+    <file>disciplines/musique.svg</file>
+    <file>disciplines/physique-chimie.svg</file>
+    <file>disciplines/segpa.svg</file>
+    <file>disciplines/svt.svg</file>
+    <file>disciplines/technologie.svg</file>
+    <file>disciplines/ulis.svg</file>
+    <file>icons/profile.svg</file>
+    <file>icons/star-plus.svg</file>
+    <file>classboard.svg</file>
+</qresource>
+<qresource prefix="/images">
+    <file alias="ClassBoard.png">classboard-256.png</file>
+</qresource>
+</RCC>

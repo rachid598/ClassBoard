@@ -54,6 +54,7 @@ class UBMainWindow;
 class UBApplicationController;
 class UBStartupHintsPalette;
 class UBPageNavigationWidget;
+class ClassBoardFavoritesPalette;
 
 class UBBoardPaletteManager : public QObject
 {
@@ -67,6 +68,7 @@ class UBBoardPaletteManager : public QObject
         UBLeftPalette* leftPalette(){return mLeftPalette;}
         UBRightPalette* rightPalette(){return mRightPalette;}
         UBStylusPalette* stylusPalette(){return mStylusPalette;}
+        ClassBoardFavoritesPalette* favoritesPalette(){return mFavoritesPalette;}
         UBActionPalette *addItemPalette() {return mAddItemPalette;}
         UBFeaturesWidget *featuresWidget() { return mpFeaturesWidget; }
         UBStartupHintsPalette *tipsPalette() { return mTipPalette; }
@@ -96,6 +98,9 @@ class UBBoardPaletteManager : public QObject
 
         void toggleErasePalette(bool ckecked);
 
+        /// ClassBoard : ouvre l'écran "Mon profil ClassBoard" puis met à jour les favoris.
+        void showClassBoardProfile();
+
     private:
 
         void setupPalettes();
@@ -107,6 +112,7 @@ class UBBoardPaletteManager : public QObject
         UBBoardController *mBoardControler;
 
         UBStylusPalette *mStylusPalette;
+        ClassBoardFavoritesPalette *mFavoritesPalette = nullptr;
 
         UBZoomPalette *mZoomPalette;
 	UBStartupHintsPalette* mTipPalette;

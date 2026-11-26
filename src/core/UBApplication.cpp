@@ -67,6 +67,10 @@
 #include "tools/UBToolsManager.h"
 
 #include "UBDisplayManager.h"
+#include "classboard/ClassBoardProfile.h"
+#include "classboard/ClassBoardSetupDialog.h"
+#include "classboard/ClassBoardTheme.h"
+
 #include "core/memcheck.h"
 
 QPointer<QUndoStack> UBApplication::undoStack;
@@ -103,9 +107,11 @@ UBApplication::UBApplication(const QString &id, int &argc, char **argv) : Single
     Q_UNUSED(id)
     staticMemoryCleaner = new QObject(0); // deleted in UBApplication destructor
 
-    setOrganizationName("Open Education Foundation");
-    setOrganizationDomain("oe-f.org");
-    setApplicationName("OpenBoard");
+    // ClassBoard : nom distinct d'OpenBoard pour que les deux logiciels
+    // puissent cohabiter (réglages et documents séparés).
+    setOrganizationName("ClassBoard");
+    setOrganizationDomain("classboard.local");
+    setApplicationName("ClassBoard");
 
 #ifdef Q_OS_OSX
     // With Qt 6.9 on macOS 15 (at least), icons aren't shown in menus. This forces their display.
@@ -143,14 +149,11 @@ UBApplication::UBApplication(const QString &id, int &argc, char **argv) : Single
     updateProtoActionsState();
 
 #ifndef Q_OS_OSX
-    setWindowIcon(QIcon(":/images/OpenBoard.png"));
+    setWindowIcon(QIcon(":/images/ClassBoard.png"));
 #endif
 
-    setStyle("fusion");
-
-    QString css = UBFileSystemUtils::readTextFile(UBPlatformUtils::applicationEtcDirectory() + "/"+ qApp->applicationName()+".css");
-    if (css.length() > 0)
-        setStyleSheet(css);
+    // ClassBoard : style Fusion + thème clair/sombre + feuille de style ClassBoard.css
+    ClassBoardTheme::apply();
 
     QApplication::setStartDragDistance(8); // default is 4, and is a bit small for tablets
 
@@ -233,8 +236,15 @@ void UBApplication::setupTranslators(QStringList args)
         language = checkLanguageAvailabilityForSankore(forcedLanguage);
 
     if(language.isEmpty()){
-        QString systemLanguage = UBPlatformUtils::systemLanguage();
-        language = checkLanguageAvailabilityForSankore(systemLanguage);
+        // ClassBoard : langue choisie dans le profil, sinon français par défaut
+        QString profileLanguage = ClassBoardProfile::interfaceLanguage();
+        if (!profileLanguage.isEmpty())
+            language = checkLanguageAvailabilityForSankore(profileLanguage);
+    }
+
+    if(language.isEmpty()){
+        QString defaultLanguage("fr");
+        language = checkLanguageAvailabilityForSankore(defaultLanguage);
     }
 
     if(language.isEmpty()){
@@ -309,6 +319,13 @@ void UBApplication::setupTranslators(QStringList args)
 int UBApplication::exec(const QString& pFileToImport)
 {
     QPixmapCache::setCacheLimit(1024 * 100);
+
+    // ClassBoard : assistant de premier lancement (choix des disciplines)
+    if (ClassBoardSetupDialog::runFirstLaunchIfNeeded())
+        ClassBoardTheme::apply();
+
+    // Libellés sous les icônes de la barre d'outils, selon le profil
+    UBSettings::settings()->appToolBarDisplayText->set(ClassBoardProfile::showToolLabels());
 
     displayManager = new UBDisplayManager(staticMemoryCleaner);
 
@@ -589,6 +606,11 @@ void UBApplication::decorateActionMenu(QAction* action)
             menu->addAction(mainWindow->actionOpenTutorial);
             menu->addAction(mainWindow->actionHintsAndTips);
             menu->addSeparator();
+            QAction* profileAction = menu->addAction(QIcon(":/images/ClassBoard.png"), tr("Mon profil ClassBoard..."));
+            connect(profileAction, &QAction::triggered, this, [this]() {
+                if (boardController && boardController->paletteManager())
+                    boardController->paletteManager()->showClassBoardProfile();
+            });
             menu->addAction(mainWindow->actionPreferences);
             menu->addAction(mainWindow->actionMultiScreen);
             if (!UBSettings::settings()->appHideCheckForSoftwareUpdate->get().toBool())
@@ -639,6 +661,11 @@ void UBApplication::insertSpaceToToolbarBeforeAction(QToolBar* toolbar, QAction*
 bool UBApplication::eventFilter(QObject *obj, QEvent *event)
 {
     bool result = QObject::eventFilter(obj, event);
+
+    // ClassBoard : l'assistant de premier lancement s'affiche avant la création
+    // de la fenêtre principale ; les autres événements ne concernent pas encore le tableau.
+    if (event->type() != QEvent::FileOpen && (!mainWindow || !boardController))
+        return result;
 
     if (event->type() == QEvent::FileOpen)
     {

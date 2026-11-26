@@ -494,6 +494,14 @@ void UBApplicationController::checkUpdate(const QUrl& url)
     if (url.isEmpty())
         jsonUrl = UBSettings::settings()->appSoftwareUpdateURL->get().toUrl();
 
+    // ClassBoard : aucune requête réseau si aucune adresse de mise à jour n'est configurée
+    if (jsonUrl.isEmpty() || !jsonUrl.isValid())
+    {
+        if (isNoUpdateDisplayed)
+            mMainWindow->information(tr("Update"), tr("No update available"));
+        return;
+    }
+
     qDebug() << "Checking for update at url: " << jsonUrl.toString();
 
     connect(mNetworkAccessManager, SIGNAL(finished(QNetworkReply*)),

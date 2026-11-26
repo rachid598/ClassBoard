@@ -1,11 +1,11 @@
 #include <winver.h>
 
-/* Application Icon */
+/* Icônes de l'application et des documents */
 
-IDI_ICON1               ICON    DISCARDABLE     "OpenBoard.ico"
+IDI_ICON1               ICON    DISCARDABLE     "ClassBoard.ico"
 IDI_ICON2               ICON    DISCARDABLE     "OpenBoardDoc.ico"
 
-/* Version Info */
+/* Informations de version */
 
 VS_VERSION_INFO VERSIONINFO
 
@@ -29,21 +29,21 @@ BEGIN
 
     BEGIN
 
-        BLOCK "040904E4" /* U.S. English, code page 1252 */
+        BLOCK "040C04E4" /* Français, page de code 1252 */
 
         BEGIN
 
-            VALUE "CompanyName",      "Open Education Foudation\000"
+            VALUE "CompanyName",      "Contributeurs ClassBoard\000"
 
-            VALUE "FileDescription",  "OpenBoard\000"
+            VALUE "FileDescription",  "ClassBoard - tableau blanc interactif\000"
 
             VALUE "FileVersion",      UBVERSION
 
-            VALUE "LegalCopyright",   "(c) Open Education Foundation 2013. All rights reserved\000"
+            VALUE "LegalCopyright",   "GPL-3.0. Base sur OpenBoard (c) Open Education Foundation\000"
 
-            VALUE "OriginalFilename", "OpenBoard.exe\000"
+            VALUE "OriginalFilename", "ClassBoard.exe\000"
 
-            VALUE "ProductName",      "OpenBoard\000"
+            VALUE "ProductName",      "ClassBoard\000"
 
             VALUE "ProductVersion",   UBVERSION
 
@@ -51,5 +51,12 @@ BEGIN
 
     END
 
-END
+    BLOCK "VarFileInfo"
 
+    BEGIN
+
+        VALUE "Translation", 0x040C, 1252
+
+    END
+
+END

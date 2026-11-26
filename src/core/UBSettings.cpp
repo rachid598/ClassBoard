@@ -41,6 +41,8 @@
 
 #include "tools/UBToolsManager.h"
 
+#include "classboard/ClassBoardProfile.h"
+
 #include "core/memcheck.h"
 
 QPointer<UBSettings> UBSettings::sSingleton = 0;
@@ -964,6 +966,14 @@ QString UBSettings::userDataDirectory()
 {
     static QString dataDirPath = "";
     if(dataDirPath.isEmpty()){
+        // ClassBoard : en mode portable, toutes les données restent dans le dossier de l'application
+        if (ClassBoardProfile::isPortable()) {
+            dataDirPath = ClassBoardProfile::portableDataDirectory();
+            if (checkDirectory(dataDirPath))
+                return dataDirPath;
+            qCritical() << "Impossible to create portable data directory " << dataDirPath;
+        }
+
         if (getAppSettings() && getAppSettings()->contains("App/DataDirectory")) {
             qDebug() << "getAppSettings()->contains(App/DataDirectory):" << getAppSettings()->contains("App/DataDirectory");
             dataDirPath = getAppSettings()->value("App/DataDirectory").toString();

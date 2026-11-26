@@ -30,6 +30,8 @@
 
 #include "UBActionPalette.h"
 
+#include "classboard/ClassBoardTheme.h"
+
 #include "core/memcheck.h"
 
 UBActionPalette::UBActionPalette(QList<QAction*> actions, Qt::Orientation orientation, QWidget * parent)
@@ -284,7 +286,9 @@ UBActionPaletteButton::UBActionPaletteButton(QAction* action, QWidget * parent)
 {
     setIconSize(QSize(32, 32));
     setDefaultAction(action);
-    setStyleSheet(QString("QToolButton {color: white; font-weight: bold; font-family: Arial; background-color: transparent; border: none}"));
+    // ClassBoard : texte lisible sur les palettes claires comme sombres
+    setStyleSheet(QString("QToolButton {color: %1; font-weight: 600; background-color: transparent; border: none}")
+                  .arg(ClassBoardTheme::colors().text.name()));
 
     setFocusPolicy(Qt::NoFocus);
 

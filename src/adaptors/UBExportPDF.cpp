@@ -87,7 +87,7 @@ bool UBExportPDF::persistsDocument(std::shared_ptr<UBDocumentProxy> pDocumentPro
     pdfWriter.setResolution(UBSettings::settings()->pdfResolution->get().toInt());
     pdfWriter.setPageMargins(QMarginsF());
     pdfWriter.setTitle(pDocumentProxy->name());
-    pdfWriter.setCreator("OpenBoard PDF export");
+    pdfWriter.setCreator("ClassBoard (OpenBoard) PDF export");
     pdfWriter.setPdfVersion(QPagedPaintDevice::PdfVersion_1_4);
 
     // need to calculate screen resolution
