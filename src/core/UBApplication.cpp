@@ -67,6 +67,7 @@
 #include "tools/UBToolsManager.h"
 
 #include "UBDisplayManager.h"
+#include "classboard/ClassBoardIcons.h"
 #include "classboard/ClassBoardProfile.h"
 #include "classboard/ClassBoardSetupDialog.h"
 #include "classboard/ClassBoardTheme.h"
@@ -342,6 +343,10 @@ int UBApplication::exec(const QString& pFileToImport)
     }
 
     mainWindow->setAttribute(Qt::WA_NativeWindow, true);
+
+    // ClassBoard : icônes modernisées et nom du menu principal
+    ClassBoardIcons::applyToMainWindow(mainWindow);
+    mainWindow->actionMenu->setText("ClassBoard");
 
     mainWindow->actionCopy->setShortcuts(QKeySequence::Copy);
     mainWindow->actionPaste->setShortcuts(QKeySequence::Paste);

@@ -4,6 +4,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     ClassBoardDisciplines.h
     ClassBoardFavoritesPalette.cpp
     ClassBoardFavoritesPalette.h
+    ClassBoardIcons.cpp
+    ClassBoardIcons.h
     ClassBoardProfile.cpp
     ClassBoardProfile.h
     ClassBoardSetupDialog.cpp

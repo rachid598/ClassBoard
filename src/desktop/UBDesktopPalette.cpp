@@ -42,6 +42,8 @@
 
 #include "gui/UBMainWindow.h"
 
+#include "classboard/ClassBoardIcons.h"
+
 #include "core/memcheck.h"
 
 UBDesktopPalette::UBDesktopPalette(QWidget *parent, UBRightPalette* _rightPalette)
@@ -210,18 +212,8 @@ void UBDesktopPalette::maximizeMe()
 void UBDesktopPalette::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
-    QIcon penIcon;
-    QIcon markerIcon;
-    QIcon eraserIcon;
-    penIcon.addFile(":images/stylusPalette/penArrow.svg", QSize(), QIcon::Normal, QIcon::Off);
-    penIcon.addFile(":images/stylusPalette/penOnArrow.svg", QSize(), QIcon::Normal, QIcon::On);
-    UBApplication::mainWindow->actionPen->setIcon(penIcon);
-    markerIcon.addFile(":images/stylusPalette/markerArrow.svg", QSize(), QIcon::Normal, QIcon::Off);
-    markerIcon.addFile(":images/stylusPalette/markerOnArrow.svg", QSize(), QIcon::Normal, QIcon::On);
-    UBApplication::mainWindow->actionMarker->setIcon(markerIcon);
-    eraserIcon.addFile(":images/stylusPalette/eraserArrow.svg", QSize(), QIcon::Normal, QIcon::Off);
-    eraserIcon.addFile(":images/stylusPalette/eraserOnArrow.svg", QSize(), QIcon::Normal, QIcon::On);
-    UBApplication::mainWindow->actionEraser->setIcon(eraserIcon);
+    // ClassBoard : icônes avec flèche de sous-menu en mode bureau
+    ClassBoardIcons::applyDrawingToolIcons(UBApplication::mainWindow, true);
 
     adjustPosition();
 }
@@ -229,18 +221,7 @@ void UBDesktopPalette::showEvent(QShowEvent *event)
 void UBDesktopPalette::hideEvent(QHideEvent *event)
 {
     Q_UNUSED(event);
-    QIcon penIcon;
-    QIcon markerIcon;
-    QIcon eraserIcon;
-    penIcon.addFile(":images/stylusPalette/pen.svg", QSize(), QIcon::Normal, QIcon::Off);
-    penIcon.addFile(":images/stylusPalette/penOn.svg", QSize(), QIcon::Normal, QIcon::On);
-    UBApplication::mainWindow->actionPen->setIcon(penIcon);
-    markerIcon.addFile(":images/stylusPalette/marker.svg", QSize(), QIcon::Normal, QIcon::Off);
-    markerIcon.addFile(":images/stylusPalette/markerOn.svg", QSize(), QIcon::Normal, QIcon::On);
-    UBApplication::mainWindow->actionMarker->setIcon(markerIcon);
-    eraserIcon.addFile(":images/stylusPalette/eraser.svg", QSize(), QIcon::Normal, QIcon::Off);
-    eraserIcon.addFile(":images/stylusPalette/eraserOn.svg", QSize(), QIcon::Normal, QIcon::On);
-    UBApplication::mainWindow->actionEraser->setIcon(eraserIcon);
+    ClassBoardIcons::applyDrawingToolIcons(UBApplication::mainWindow, false);
 }
 
 QPoint UBDesktopPalette::buttonPos(QAction *action)

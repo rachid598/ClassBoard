@@ -22,6 +22,7 @@
 #include "ClassBoardFavoritesPalette.h"
 
 #include "ClassBoardDisciplines.h"
+#include "ClassBoardIcons.h"
 #include "ClassBoardProfile.h"
 #include "ClassBoardTheme.h"
 
@@ -56,6 +57,11 @@ QIcon ClassBoardFavoritesPalette::iconForFavorite(const QString& favorite, QStri
             return QIcon();
 
         *url = QUrl::fromLocalFile(path);
+
+        const QString iconName = ClassBoardIcons::iconNameForFavorite(favorite);
+        if (!iconName.isEmpty())
+            return ClassBoardIcons::icon(iconName, ClassBoardIcons::Style::Favorite);
+
         return QIcon(UBGraphicsWidgetItem::iconFilePath(*url));
     }
 
@@ -65,6 +71,11 @@ QIcon ClassBoardFavoritesPalette::iconForFavorite(const QString& favorite, QStri
         return QIcon();
 
     *url = QUrl(desc.id);
+
+    const QString iconName = ClassBoardIcons::iconNameForFavorite(favorite);
+    if (!iconName.isEmpty())
+        return ClassBoardIcons::icon(iconName, ClassBoardIcons::Style::Favorite);
+
     return QIcon(desc.icon);
 }
 
@@ -96,8 +107,7 @@ void ClassBoardFavoritesPalette::reload()
         addAction(action);
     }
 
-    const ClassBoardTheme::Colors c = ClassBoardTheme::colors();
-    QAction* edit = new QAction(ClassBoardTheme::tintedIcon(":/classboard/icons/star-plus.svg", c.textSecondary, 36),
+    QAction* edit = new QAction(ClassBoardTheme::tintedIcon(":/classboard/icons/star-plus.svg", ClassBoardTheme::colors().textSecondary, 36),
                                 tr("Modifier mes favoris"), this);
     edit->setToolTip(tr("Modifier mes favoris"));
     connect(edit, &QAction::triggered, this, &ClassBoardFavoritesPalette::editRequested);

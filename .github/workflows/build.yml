@@ -19,7 +19,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+  cancel-in-progress: false
 
 env:
   QT_VERSION: "6.8.3"
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Dépendances
         run: |
@@ -81,12 +81,12 @@ jobs:
       run:
         shell: pwsh
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: ClassBoard
 
       - name: Bibliothèques tierces (OpenBoard-ThirdParty)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: ${{ env.THIRDPARTY_REPO }}
           ref: ${{ env.THIRDPARTY_REF }}
@@ -100,7 +100,6 @@ jobs:
           target: desktop
           arch: win64_msvc2022_64
           modules: qtwebengine qtwebchannel qtpositioning qtmultimedia qt5compat qtimageformats qtactiveqt
-          tools: tools_jom
           cache: true
 
       - name: Environnement MSVC
@@ -123,10 +122,10 @@ jobs:
           "value=$v" >> $env:GITHUB_OUTPUT
           Write-Host "Version : $v"
 
-      - name: jom dans le PATH
+      - name: jom (compilation parallèle)
         run: |
-          $jom = Get-ChildItem "$env:IQTA_TOOLS" -Recurse -Filter jom.exe -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($jom) { $jom.DirectoryName >> $env:GITHUB_PATH; Write-Host "jom : $($jom.FullName)" } else { Write-Host "jom absent : nmake sera utilisé" }
+          choco install jom -y --no-progress
+          if (-not (Get-Command jom -ErrorAction SilentlyContinue)) { Write-Host "jom indisponible : nmake sera utilisé" }
 
       - name: Compilation (Release x64)
         run: ./ClassBoard/scripts/windows/build.ps1 -ThirdPartyDir OpenBoard-ThirdParty
@@ -166,7 +165,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/download-artifact@v4
         with:
           path: artifacts

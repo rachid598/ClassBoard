@@ -29,6 +29,7 @@
 
 #include "UBStylusPalette.h"
 
+#include "classboard/ClassBoardProfile.h"
 #include "classboard/ClassBoardTheme.h"
 
 #include <QtGui>
@@ -79,6 +80,8 @@ UBStylusPalette::UBStylusPalette(QWidget *parent, Qt::Orientation orient)
 
     setActions(actions);
     setButtonIconSize(ClassBoardTheme::scaledIconSize(42)); // ClassBoard : taille réglable
+    if (ClassBoardProfile::showToolLabels())
+        setToolButtonStyle(Qt::ToolButtonTextUnderIcon);    // ClassBoard : libellés sous les icônes
     groupActions();
 
     UBShortcutManager::shortcutManager()->addActionGroup(mActionGroup);

@@ -50,6 +50,16 @@ Write-Host ">> windeployqt $($deployArgs -join ' ')"
 & windeployqt @deployArgs
 if ($LASTEXITCODE -ne 0) { throw "windeployqt a échoué ($LASTEXITCODE)" }
 
+# Traductions Qt (boîtes de dialogue standard en français, etc.)
+$qtTranslations = Join-Path $env:QT_ROOT_DIR "translations"
+if ($env:QT_ROOT_DIR -and (Test-Path $qtTranslations)) {
+    $i18n = Join-Path $Dist "i18n"
+    New-Item -ItemType Directory -Force $i18n | Out-Null
+    Get-ChildItem $qtTranslations -Filter "*.qm" |
+        Where-Object { $_.Name -match '^(qt|qtbase|qtmultimedia|qtwebengine)_(fr|en|de|es|it)\.qm$' } |
+        Copy-Item -Destination $i18n -Force
+}
+
 # 4. Bibliothèques tierces
 # poppler-cpp.dll n'est pas utilisé sous Windows (seul poppler.dll est lié)
 Get-ChildItem (Join-Path $ThirdPartyDir "poppler\bin") -Filter "*.dll" |

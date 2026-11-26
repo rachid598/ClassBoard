@@ -1,0 +1,183 @@
+/*
+ * ClassBoard — thème sombre, appliqué par-dessus ClassBoard.css.
+ * Fond #1C1C1C, surfaces #2B2B2B, bordures #3D3D3D, texte #F2F2F2,
+ * accent #6CB8FF. Limite l'éblouissement au vidéoprojecteur.
+ */
+
+QWidget:enabled
+{
+    color: #F2F2F2;
+}
+
+QWidget:disabled
+{
+    color: #7A7A7A;
+}
+
+QMainWindow,
+QDialog
+{
+    background-color: #1C1C1C;
+}
+
+QComboBox,
+QPushButton,
+QComboBox QAbstractItemView,
+QLineEdit,
+QSpinBox,
+QDoubleSpinBox,
+QLineEdit#ubWebBrowserLineEdit
+{
+    background: #2B2B2B;
+    border-color: #4A4A4A;
+    color: #F2F2F2;
+}
+
+QPushButton:hover,
+QComboBox:hover
+{
+    background: #363636;
+}
+
+QPushButton:default
+{
+    background: #6CB8FF;
+    color: #0B2540;
+}
+
+QTextEdit,
+QLineEdit,
+QComboBox#DockPaletteWidgetComboBox QAbstractItemView
+{
+    selection-background-color: #23476B;
+    selection-color: #F2F2F2;
+}
+
+QToolTip,
+QMenu
+{
+    background-color: #2B2B2B;
+    color: #F2F2F2;
+    border-color: #3D3D3D;
+}
+
+QMenu::item:selected
+{
+    background-color: #23476B;
+    color: #FFFFFF;
+}
+
+QMenu::separator,
+QToolBar::separator
+{
+    background-color: #3D3D3D;
+}
+
+QToolBar
+{
+    background-color: #242424;
+    border-bottom: 1px solid #3D3D3D;
+}
+
+QToolBar QToolButton
+{
+    color: #F2F2F2;
+}
+
+QToolBar QToolButton:hover
+{
+    background: #333333;
+}
+
+QToolBar QToolButton:pressed,
+QToolBar QToolButton:checked,
+QToolButton#ubButtonMenu:pressed,
+QToolButton#ubButtonMenu:checked
+{
+    background: #23476B;
+    color: #FFFFFF;
+}
+
+QToolButton#ubButtonGroupLeft,
+QToolButton#ubButtonGroupCenter,
+QToolButton#ubButtonGroupRight,
+QToolButton#desktop-ubButtonGroupLeft,
+QToolButton#desktop-ubButtonGroupCenter,
+QToolButton#desktop-ubButtonGroupRight
+{
+    background: #2B2B2B;
+    border-color: #4A4A4A;
+}
+
+QToolButton#ubButtonGroupLeft:checked,
+QToolButton#ubButtonGroupCenter:checked,
+QToolButton#ubButtonGroupRight:checked,
+QToolButton#desktop-ubButtonGroupLeft:checked,
+QToolButton#desktop-ubButtonGroupCenter:checked,
+QToolButton#desktop-ubButtonGroupRight:checked
+{
+    background: #23476B;
+}
+
+QFrame#newDocumentFolderFrame,
+QFrame#newDocumentFrame,
+QFrame#newFolderFrame,
+QTreeView,
+QTabWidget::pane
+{
+    background: #2B2B2B;
+    border-color: #3D3D3D;
+}
+
+QWidget#topRightFrame,
+QTabWidget::tab-bar#ubWebBrowserTabWidget,
+QTabBar::tab#ubWebBrowserTabBar
+{
+    background-color: #1C1C1C;
+}
+
+QTreeView::item:selected:active,
+QTreeView::item:selected,
+QTreeView::branch:selected
+{
+    background: #23476B;
+    color: #FFFFFF;
+}
+
+QTabBar::tab
+{
+    color: #B5B5B5;
+}
+
+QTabBar::tab:selected,
+QTabBar::tab:hover
+{
+    color: #F2F2F2;
+}
+
+QTabBar::tab:selected
+{
+    border-bottom-color: #6CB8FF;
+}
+
+QSlider::groove:horizontal
+{
+    background: #4A4A4A;
+}
+
+QSlider::sub-page:horizontal
+{
+    background: #6CB8FF;
+}
+
+QSlider::handle:horizontal
+{
+    background: #1C1C1C;
+    border-color: #6CB8FF;
+}
+
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal
+{
+    background: #555555;
+}

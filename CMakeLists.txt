@@ -66,6 +66,7 @@ set(OPENBOARD_STARTUP_HINTS resources/startupHints)
 
 set(OPENBOARD_ETC_FILE      ${OPENBOARD_ETC_DIR}/ClassBoard.config
                             ${OPENBOARD_ETC_DIR}/ClassBoard.css
+                            ${OPENBOARD_ETC_DIR}/ClassBoard-dark.css
                             ${OPENBOARD_ETC_DIR}/widgets.md5sum)
 set(OPENBOARD_TEMPLATE_FILE ${OPENBOARD_ETC_DIR}/asyncAPI.js
                             ${OPENBOARD_ETC_DIR}/intranet-podcast-metadata.template
