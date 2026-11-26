@@ -67,6 +67,10 @@ Corrections déjà faites :
 
 - `UBApplication::eventFilter` suppose que `mainWindow`/`boardController` existent :
   une garde a été ajoutée car l'assistant s'affiche avant leur création (sinon plantage).
+- Même piège pour `UBApplication::toolBarDisplayTextChanged` : le profil applique le
+  réglage « libellés » avant la création de la fenêtre ; garde ajoutée (plantage au
+  démarrage si l'enseignant désactivait les libellés). **Tout slot relié à un `UBSetting`
+  modifié avant `mainWindow` doit tolérer `mainWindow == nullptr`.**
 - Ubuntu : la compilation exige `libpoppler-private-dev` (en-têtes Splash).
 - Les traductions françaises (`resources/i18n/OpenBoard_fr.ts`) ont été adaptées
   (« ClassBoard ») ; les nouvelles chaînes ClassBoard sont écrites directement en

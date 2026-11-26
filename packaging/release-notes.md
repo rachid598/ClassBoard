@@ -29,4 +29,4 @@ msiexec /x ClassBoard-Setup-x64.msi /qn /norestart
 Configuration requise : Windows 10 ou 11, 64 bits. Testé automatiquement par
 la CI (compilation, démarrage) ; **pas encore validé sur un TBI Epson réel**.
 
-Voir [CHANGELOG.md](https://github.com/rachid598/ClassBoard/blob/main/CHANGELOG.md) pour le détail des changements.
+Voir [CHANGELOG.md](https://github.com/rachid598/ClassBoard/blob/HEAD/CHANGELOG.md) pour le détail des changements.

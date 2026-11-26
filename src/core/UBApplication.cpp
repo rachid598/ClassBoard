@@ -520,6 +520,10 @@ void UBApplication::toolBarPositionChanged(QVariant topOrBottom)
 
 void UBApplication::toolBarDisplayTextChanged(QVariant display)
 {
+    // ClassBoard : le réglage peut être appliqué depuis le profil avant la création de la fenêtre
+    if (!mainWindow)
+        return;
+
     Qt::ToolButtonStyle toolButtonStyle = display.toBool() ? Qt::ToolButtonTextUnderIcon : Qt::ToolButtonIconOnly;
     mainWindow->boardToolBar->setToolButtonStyle(toolButtonStyle);
     mainWindow->webToolBar->setToolButtonStyle(toolButtonStyle);
