@@ -32,6 +32,12 @@ Première version de ClassBoard, basée sur OpenBoard 1.7.7 (branche `master`).
 - Fonds Seyès proposés par défaut.
 - Sauvegarde automatique toutes les 2 minutes (au lieu de 3).
 
+### Corrigé (pendant le développement de la 0.1.0)
+- Plantage au démarrage si l'assistant s'affichait avant la fenêtre principale.
+- Plantage au démarrage quand les libellés d'outils étaient désactivés.
+- Barre de favoris réduite à un point après modification du profil.
+- Favoris figés quand on changeait de discipline sans ouvrir l'onglet Favoris.
+
 ### Supprimé / désactivé
 - Recherche automatique de mises à jour sur les serveurs d'OpenBoard
   (aucune requête réseau non sollicitée). Astuces de démarrage désactivées
