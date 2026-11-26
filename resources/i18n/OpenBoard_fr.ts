@@ -1062,22 +1062,22 @@ Voulez-vous continuer quand-même ?   </translation>
         <location filename="../forms/mainWindow.ui" line="727"/>
         <location filename="../forms/mainWindow.ui" line="730"/>
         <source>OpenBoard</source>
-        <translation>OpenBoard</translation>
+        <translation>ClassBoard</translation>
     </message>
     <message>
         <location filename="../forms/mainWindow.ui" line="411"/>
         <source>Quit OpenBoard</source>
-        <translation>Quitter OpenBoard</translation>
+        <translation>Quitter ClassBoard</translation>
     </message>
     <message>
         <location filename="../forms/mainWindow.ui" line="1852"/>
         <source>Hide OpenBoard</source>
-        <translation>Cacher OpenBoard</translation>
+        <translation>Cacher ClassBoard</translation>
     </message>
     <message>
         <location filename="../forms/mainWindow.ui" line="1855"/>
         <source>Hide OpenBoard Application</source>
-        <translation>Masquer OpenBoard</translation>
+        <translation>Masquer ClassBoard</translation>
     </message>
     <message>
         <location filename="../forms/mainWindow.ui" line="1871"/>
@@ -1627,7 +1627,7 @@ Voulez-vous continuer quand-même ?   </translation>
     <message>
         <location filename="../../src/desktop/UBDesktopPalette.cpp" line="55"/>
         <source>Show OpenBoard</source>
-        <translation>Afficher OpenBoard</translation>
+        <translation>Afficher ClassBoard</translation>
     </message>
 </context>
 <context>
@@ -1645,7 +1645,7 @@ Voulez-vous continuer quand-même ?   </translation>
     <message>
         <location filename="../../src/document/UBDocumentController.cpp" line="2078"/>
         <source>OpenBoard could not recover this file. Please delete it or contact your administrator for help</source>
-        <translation>OpenBoard n’a pas pu récupérer ce document. Veuillez le supprimer ou contacter votre administrateur pour obtenir de l’aide</translation>
+        <translation>ClassBoard n’a pas pu récupérer ce document. Veuillez le supprimer ou contacter votre administrateur pour obtenir de l’aide</translation>
     </message>
     <message>
         <location filename="../../src/document/UBDocumentController.cpp" line="2086"/>
@@ -2295,7 +2295,7 @@ Voulez-vous continuer ?</translation>
         <location filename="../../src/adaptors/UBExportFullPDF.cpp" line="313"/>
         <location filename="../../src/adaptors/UBExportFullPDF.cpp" line="327"/>
         <source>The original PDF imported in OpenBoard seems not valid and could not be merged with your annotations. Please repair it and then reimport it in OpenBoard. The current export will be done with detailed (heavy) images of the pages of the original PDF instead, to avoid complete export failure.</source>
-        <translation>Le PDF original importé dans OpenBoard semble invalide et n’a pas pu être fusionné avec vos annotations. Réparez-le puis réimportez-le dans OpenBoard. L’exportation en cours sera effectuée avec des images détaillées (lourdes) des pages du PDF original, afin d’éviter un échec de l’exportation.</translation>
+        <translation>Le PDF original importé dans ClassBoard semble invalide et n’a pas pu être fusionné avec vos annotations. Réparez-le puis réimportez-le dans ClassBoard. L’exportation en cours sera effectuée avec des images détaillées (lourdes) des pages du PDF original, afin d’éviter un échec de l’exportation.</translation>
     </message>
 </context>
 <context>
@@ -2864,7 +2864,7 @@ Voulez-vous ignorer les erreurs pour ce serveur ?</translation>
     </message>
     <message>
         <source>You can always access the OpenBoard Document Importer through the Preferences panel in the About tab. Warning, if you have already imported your Open-Sankore datas, you might loose your current OpenBoard documents.</source>
-        <translation type="vanished">Vous pouvez accéder à nouveau à ce panneau au travers des Préférences dans l’onglet A propos. Attention, si vous avez déjà importé les données d’Open-Sankoré vous risquez de perdre les documents courants dans OpenBoard.</translation>
+        <translation type="vanished">Vous pouvez accéder à nouveau à ce panneau au travers des Préférences dans l’onglet A propos. Attention, si vous avez déjà importé les données d’Open-Sankoré vous risquez de perdre les documents courants dans ClassBoard.</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -2876,7 +2876,7 @@ Voulez-vous ignorer les erreurs pour ce serveur ?</translation>
     </message>
     <message>
         <source>Open-Sankoré documents are present on your computer. It is possible to import them to OpenBoard by pressing the “Proceed” button to launch the importer application.</source>
-        <translation type="vanished">Des documents Open-Sankoré sont présents sur votre ordinateur. Il est possible de les importer dans OpenBoard en appuyant sur le bouton “Procéder” pour lancer le processus d’importation.</translation>
+        <translation type="vanished">Des documents Open-Sankoré sont présents sur votre ordinateur. Il est possible de les importer dans ClassBoard en appuyant sur le bouton “Procéder” pour lancer le processus d’importation.</translation>
     </message>
 </context>
 <context>
@@ -2904,7 +2904,7 @@ Voulez-vous ignorer les erreurs pour ce serveur ?</translation>
     <message>
         <location filename="../../src/core/UBPersistenceManager.cpp" line="1419"/>
         <source>OpenBoard has lost access to the document repository &apos;%1&apos;. Unfortunately the application must shut down to avoid data corruption. Latest changes may be lost as well.</source>
-        <translation>OpenBoard a perdu l&apos;accès au répertoire des documents &apos;%1&apos;. Malheureusement, l&apos;application sera fermée afin d&apos;éviter la corruption des données. Les dernières modifications pourraient être également perdues.</translation>
+        <translation>ClassBoard a perdu l&apos;accès au répertoire des documents &apos;%1&apos;. Malheureusement, l&apos;application sera fermée afin d&apos;éviter la corruption des données. Les dernières modifications pourraient être également perdues.</translation>
     </message>
     <message>
         <location filename="../../src/core/UBPersistenceManager.cpp" line="1172"/>
@@ -3029,7 +3029,7 @@ Voulez-vous ignorer les erreurs pour ce serveur ?</translation>
     <message>
         <location filename="../../src/podcast/UBPodcastController.cpp" line="371"/>
         <source>OpenBoard Cast</source>
-        <translation>OpenBoard Cast</translation>
+        <translation>ClassBoard Cast</translation>
     </message>
 </context>
 <context>
@@ -3741,7 +3741,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../forms/youTubePublishingDialog.ui" line="72"/>
         <source>OpenBoard</source>
-        <translation>OpenBoard</translation>
+        <translation>ClassBoard</translation>
     </message>
 </context>
 <context>

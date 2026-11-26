@@ -154,6 +154,20 @@ void UBPreferencesController::wire()
     mPreferencesUI->mainTabWidget->setCurrentWidget(mPreferencesUI->displayTab);
     mPreferencesUI->versionLabel->setText(tr("version: ") + UBApplication::applicationVersion());
 
+    // ClassBoard : mentions légales (fork d'OpenBoard, GPL-3.0) et aucune mise à jour en ligne
+    mPreferencesUI->copyrightTextBrowser->setHtml(
+        "<h2>ClassBoard " + UBApplication::applicationVersion() + "</h2>"
+        "<p>Tableau blanc interactif libre et gratuit pour l'enseignement, sans compte, sans abonnement "
+        "et sans télémétrie.</p>"
+        "<p>ClassBoard est une version modifiée d'<b>OpenBoard</b> 1.7.7 "
+        "(&copy; Open Education Foundation et contributeurs d'OpenBoard), lui-même issu d'Open-Sankoré "
+        "et d'Uniboard. Il est distribué sous licence <b>GNU GPL version 3</b>, avec l'exception de liaison "
+        "OpenSSL d'OpenBoard. Le code source est disponible sur "
+        "<a href=\"https://github.com/rachid598/ClassBoard\">github.com/rachid598/ClassBoard</a>.</p>"
+        "<p>Ce programme est fourni SANS AUCUNE GARANTIE. Voir le fichier LICENSE pour les détails.</p>"
+        "<hr/>" + mPreferencesUI->copyrightTextBrowser->toHtml());
+    mPreferencesUI->softwareUpdateGroupBox->setVisible(false);
+
     connect(mPreferencesUI->closeButton, SIGNAL(released()), this, SLOT(close()));
     connect(mPreferencesUI->defaultSettingsButton, SIGNAL(released()), this, SLOT(defaultSettings()));
 
