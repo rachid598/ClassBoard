@@ -64,7 +64,8 @@ namespace
         painter.fillPath(arrow, color);
     }
 
-    QPixmap render(const QString& name, ClassBoardIcons::Style style, bool on, bool disabled, bool withMenuArrow)
+    QPixmap render(const QString& name, ClassBoardIcons::Style style, bool on, bool disabled, bool withMenuArrow,
+                   const QColor& forcedColor)
     {
         const ClassBoardTheme::Colors c = ClassBoardTheme::colors();
 
@@ -102,6 +103,9 @@ namespace
             break;
         }
 
+        if (forcedColor.isValid() && !on)
+            glyph = forcedColor;
+
         if (disabled)
         {
             glyph = c.textSecondary;
@@ -120,13 +124,13 @@ namespace
     }
 }
 
-QIcon ClassBoardIcons::icon(const QString& name, Style style, bool withMenuArrow)
+QIcon ClassBoardIcons::icon(const QString& name, Style style, bool withMenuArrow, const QColor& color)
 {
     QIcon icon;
-    icon.addPixmap(render(name, style, false, false, withMenuArrow), QIcon::Normal, QIcon::Off);
-    icon.addPixmap(render(name, style, true, false, withMenuArrow), QIcon::Normal, QIcon::On);
-    icon.addPixmap(render(name, style, false, true, withMenuArrow), QIcon::Disabled, QIcon::Off);
-    icon.addPixmap(render(name, style, false, true, withMenuArrow), QIcon::Disabled, QIcon::On);
+    icon.addPixmap(render(name, style, false, false, withMenuArrow, color), QIcon::Normal, QIcon::Off);
+    icon.addPixmap(render(name, style, true, false, withMenuArrow, color), QIcon::Normal, QIcon::On);
+    icon.addPixmap(render(name, style, false, true, withMenuArrow, color), QIcon::Disabled, QIcon::Off);
+    icon.addPixmap(render(name, style, false, true, withMenuArrow, color), QIcon::Disabled, QIcon::On);
     return icon;
 }
 

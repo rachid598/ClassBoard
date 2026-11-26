@@ -355,7 +355,9 @@ void UBApplicationController::showBoard()
 {
     mMainWindow->webToolBar->hide();
     mMainWindow->documentToolBar->hide();
-    mMainWindow->boardToolBar->show();
+    // ClassBoard : la barre d'OpenBoard est remplacée par les barres flottantes
+    // (ClassBoardBoardChrome) ; ses actions restent disponibles et raccourcis actifs.
+    mMainWindow->boardToolBar->hide();
 
     if (mMainMode == Document)
     {

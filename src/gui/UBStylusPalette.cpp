@@ -78,7 +78,19 @@ UBStylusPalette::UBStylusPalette(QWidget *parent, Qt::Orientation orient)
     actions << UBApplication::mainWindow->actionSnap;
     UBApplication::mainWindow->actionSnap->setProperty("ungrouped", true);
 
+    // ClassBoard : annuler / rétablir directement dans la barre des outils
+    actions << UBApplication::mainWindow->actionUndo;
+    UBApplication::mainWindow->actionUndo->setProperty("ungrouped", true);
+    actions << UBApplication::mainWindow->actionRedo;
+    UBApplication::mainWindow->actionRedo->setProperty("ungrouped", true);
+
     setActions(actions);
+
+    // ClassBoard : le zoom passe par la barre de zoom (en bas à gauche) ; les outils
+    // « zoom » gardent leur place dans le groupe (identifiants d'outils inchangés)
+    // mais sont masqués pour libérer de la place sur la barre des outils.
+    UBApplication::mainWindow->actionZoomIn->setVisible(false);
+    UBApplication::mainWindow->actionZoomOut->setVisible(false);
     setButtonIconSize(ClassBoardTheme::scaledIconSize(42)); // ClassBoard : taille réglable
     if (ClassBoardProfile::showToolLabels())
         setToolButtonStyle(Qt::ToolButtonTextUnderIcon);    // ClassBoard : libellés sous les icônes

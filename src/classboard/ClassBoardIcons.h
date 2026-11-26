@@ -44,7 +44,8 @@ public:
     };
 
     /// Icône "nom" (fichier :/classboard/tools/<nom>.svg) dans le style demandé.
-    static QIcon icon(const QString& name, Style style = Style::Tool, bool withMenuArrow = false);
+    static QIcon icon(const QString& name, Style style = Style::Tool, bool withMenuArrow = false,
+                      const QColor& color = QColor());
 
     /// Nom d'icône associé à un favori (ex. "openboardtool://ruler" -> "ruler"). Vide si inconnu.
     static QString iconNameForFavorite(const QString& favorite);

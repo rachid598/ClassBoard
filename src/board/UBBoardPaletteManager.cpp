@@ -48,6 +48,7 @@
 #include "gui/UBBackgroundPalette.h"
 #include "gui/UBFavoriteToolPalette.h"
 
+#include "classboard/ClassBoardBoardChrome.h"
 #include "classboard/ClassBoardFavoritesPalette.h"
 #include "classboard/ClassBoardProfile.h"
 #include "classboard/ClassBoardSetupDialog.h"
@@ -248,6 +249,11 @@ void UBBoardPaletteManager::setupPalettes()
     mFavoritesPalette = new ClassBoardFavoritesPalette(mContainer);
     connect(mFavoritesPalette, &ClassBoardFavoritesPalette::editRequested, this, &UBBoardPaletteManager::showClassBoardProfile);
     mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar());
+
+    // ClassBoard : barres flottantes aux coins du tableau (remplacent la barre d'OpenBoard)
+    mBoardChrome = new ClassBoardBoardChrome(mContainer, this);
+    mBoardChrome->setInkAnchor(mStylusPalette);
+    connect(UBApplication::boardController, &UBBoardController::autosaved, mBoardChrome, &ClassBoardBoardChrome::markSaved);
 
     mZoomPalette = new UBZoomPalette(mContainer);
 
@@ -535,6 +541,9 @@ void UBBoardPaletteManager::containerResized()
     if (mFavoritesPalette)
         mFavoritesPalette->placeInContainer(QRect(userLeft, userTop, userWidth, userHeight));
 
+    if (mBoardChrome)
+        mBoardChrome->place(mContainer->rect());
+
     if(mZoomPalette)
     {
         mZoomPalette->move(userLeft + userWidth - mZoomPalette->width()
@@ -734,6 +743,10 @@ void UBBoardPaletteManager::changeMode(eUBDockPaletteWidgetMode newMode, bool is
                     mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar());
                     mLeftPalette->stackUnder(mFavoritesPalette);
                 }
+
+                // ClassBoard : onglets des panneaux latéraux sous les barres flottantes du haut
+                mLeftPalette->setAdditionalVOffset(ClassBoardBoardChrome::TopReservedHeight);
+                mRightPalette->setAdditionalVOffset(ClassBoardBoardChrome::TopReservedHeight);
 
                 if( !isInit )
                     containerResized();
@@ -1031,6 +1044,8 @@ void UBBoardPaletteManager::changeStylusPaletteOrientation(QVariant var)
     }
 
     connect(mStylusPalette, SIGNAL(stylusToolDoubleClicked(int)), UBApplication::boardController, SLOT(stylusToolDoubleClicked(int)));
+    if (mBoardChrome)
+        mBoardChrome->setInkAnchor(mStylusPalette);
     mStylusPalette->setVisible(bVisible); // always show stylus palette at startup
 }
 

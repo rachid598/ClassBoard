@@ -36,6 +36,7 @@ ClassBoard/
 │       ├── ClassBoardTheme          thème clair/sombre, couleurs, feuille de style
 │       ├── ClassBoardIcons          jeu d'icônes SVG appliqué aux actions à l'exécution
 │       ├── ClassBoardSetupDialog    assistant de premier lancement + « Mon profil »
+│       ├── ClassBoardBoardChrome    barres flottantes du tableau (disposition de la maquette)
 │       └── ClassBoardFavoritesPalette  barre de favoris à gauche du tableau
 ├── resources/
 │   ├── classboard/           ★ icônes SVG (disciplines, outils), logo, classboard.qrc
@@ -60,10 +61,24 @@ Toutes les retouches sont courtes et marquées `// ClassBoard :` pour faciliter 
 | `core/UBSettings.cpp` | mode portable (`portable.txt`) |
 | `core/UBApplicationController.cpp` | aucune requête si l'URL de mise à jour est vide |
 | `core/UBPreferencesController.cpp` | mentions légales ClassBoard, masquage des mises à jour |
-| `board/UBBoardPaletteManager.*` | création, placement et visibilité de la barre de favoris |
-| `gui/UBStylusPalette.cpp` | taille des boutons et libellés selon le profil |
+| `board/UBBoardPaletteManager.*` | création, placement et visibilité de la barre de favoris et des barres flottantes ; onglets latéraux décalés sous les barres du haut |
+| `core/UBApplicationController.cpp` | barre d'outils d'OpenBoard masquée en mode tableau (remplacée par les barres flottantes) |
+| `board/UBBoardController.*` | signal `autosaved()` (affichage « Enregistré automatiquement ») |
+| `gui/UBZoomPalette.cpp` | ancienne bulle de zoom désactivée (remplacée par la barre de zoom) |
+| `gui/UBStylusPalette.cpp` | taille des boutons et libellés selon le profil ; Annuler/Rétablir ajoutés ; outils « zoom » masqués |
 | `gui/UBActionPalette.cpp`, `gui/UBFloatingPalette.cpp` | couleurs du thème |
 | `desktop/UBDesktopPalette.cpp` | icônes ClassBoard en mode bureau |
+
+### Disposition du tableau (maquette validée)
+
+La grande barre d'outils d'OpenBoard est masquée en mode tableau. `ClassBoardBoardChrome`
+pose des barres flottantes aux coins (document, modes, zoom, pages) et la barre des
+couleurs au-dessus de la barre des outils. Toutes réutilisent les **actions existantes**
+d'OpenBoard (`actionBack`, `actionNewPage`, `actionBackgrounds`, groupes de couleurs
+`UBToolbarButtonGroup`…) : aucune logique du tableau n'est dupliquée. Les actions de la
+barre masquée sont rattachées à la fenêtre pour garder les raccourcis (Ctrl+Z…).
+Les pages par défaut sont au format 16:9 (`DefaultPageSize` = 1696×960) pour remplir
+les écrans de TBI actuels.
 
 ## 3. Données et vie privée
 

@@ -13,40 +13,56 @@ Au tout premier démarrage, un assistant en trois étapes s'ouvre :
 
 Ces choix ne cloisonnent rien : un professeur de français peut toujours utiliser le compas.
 Ils sont enregistrés dans votre profil Windows et **ne sont pas redemandés**.
-Pour les modifier : menu **ClassBoard** (en haut à droite) › **Mon profil ClassBoard…**
+Pour les modifier : logo ClassBoard (en haut à gauche) › **Mon profil ClassBoard…**
 
 ## 2. L'écran
 
+La page occupe tout l'écran. Les commandes sont regroupées dans de petites barres
+flottantes, aux coins :
+
 ```
-┌───────────────────────────────────────────────────────────────────────┐
-│ Stylets  Couleur  Trait  Gomme │ Fonds │ Annuler Rétablir │ Pages ‹ › │ … Tableau Web Documents Bureau ClassBoard │
-├───┬───────────────────────────────────────────────────────────────────┤
-│ ★ │                                                                   │
-│ ★ │                        zone d'écriture                            │
-│ ★ │                                                                   │
-│ ☆ │        ┌────────────────────────────────────────────┐             │
-│   │        │ Stylo Gomme Surligneur Sélection … Laser … │             │
-└───┴────────┴────────────────────────────────────────────┴─────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ [C] Nom du document              Fonds  Documents  Web  [ Mode bureau ]     │
+│     Enregistré automatiquement                                               │
+│ ★                                                                            │
+│ ★                        zone d'écriture                                     │
+│ ★                                                                            │
+│ ☆            [ ■ ■ ■ ■ ■   ─ ━ ▬   🗑 ]   ← couleurs et épaisseurs           │
+│ [− 100 % +]  [ Stylo Gomme … Laser … Annuler Rétablir ]  [‹ Page 1/3 › +Page] │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Barre du haut** : couleurs, épaisseurs, fonds de page, annuler, pages.
-- **Barre flottante** (en bas) : les outils d'écriture. Elle se déplace en la faisant glisser par son bord.
-- **Barre de favoris** (à gauche) : un toucher pose l'outil au centre de la page. L'étoile ☆ permet de modifier vos favoris.
-- **Panneaux latéraux** : onglet de gauche = miniatures des pages ; onglet de droite = bibliothèque (images, applications, instruments).
+- **En haut à gauche** : le logo ouvre le **menu ClassBoard** (Mon profil, Préférences,
+  copier/coller, taille de la page, capture vidéo, quitter…), puis le nom du document.
+- **En haut à droite** : **Fonds** (uni, quadrillé, Seyès…), **Documents**, **Web** et
+  **Mode bureau** (écrire par-dessus Windows).
+- **Barre des outils** (en bas, déplaçable) : stylo, gomme, surligneur, sélection,
+  interagir, déplacer, laser, ligne, texte, capture, clavier, aimanter, **annuler**, **rétablir**.
+- **Au-dessus** : les **couleurs et épaisseurs** du stylo (ou les tailles de gomme), et la
+  corbeille pour effacer la page.
+- **En bas à gauche** : le **zoom** (−, +, taille normale).
+- **En bas à droite** : les **pages** (précédente, suivante, ajouter, dupliquer).
+- **À gauche** : la **barre de favoris** de vos disciplines ; l'étoile ☆ permet de la modifier.
+- **Petits onglets sur les bords** : à gauche les miniatures des pages, à droite la
+  bibliothèque (images, applications, instruments).
+
+Sur un écran étroit, les barres de zoom et de pages se placent automatiquement au-dessus
+de la barre des outils.
 
 ## 3. Les gestes essentiels
 
 | Je veux… | Je fais… |
 |---|---|
 | Écrire | **Stylo**, puis écrire au stylet ou au doigt |
-| Effacer | **Gomme** (ou l'extrémité gomme du stylet) ; **Effacer** en haut vide la page |
+| Effacer | **Gomme** (ou l'extrémité gomme du stylet) ; la corbeille au-dessus des outils vide la page |
 | Surligner un texte | **Surligneur** |
 | Déplacer / agrandir un objet | **Sélection**, puis toucher l'objet |
 | Utiliser un widget (minuteur…) | **Interagir**, puis toucher le widget |
 | Montrer quelque chose | **Laser** |
 | Tracer un trait droit | **Ligne** (ou dessiner une forme : la reconnaissance la redresse) |
-| Ajouter une page | **Pages** en haut, puis **‹ ›** pour naviguer |
-| Changer de fond (Seyès, quadrillage) | **Fonds** en haut |
+| Ajouter une page | **+ Page** en bas à droite, puis **‹ ›** pour naviguer |
+| Changer de fond (Seyès, quadrillage) | **Fonds** en haut à droite |
+| Annuler une erreur | **Annuler** dans la barre des outils (ou Ctrl+Z) |
 | Écrire en cursive scolaire | **Texte**, puis choisir la police **Marelle** ou **Écolier** |
 
 ## 4. Outils de classe
@@ -66,7 +82,7 @@ masque, projecteur, loupe, chronomètre, calculatrice, graphique, horloge…
 
 ## 5. Annoter le bureau Windows et les autres logiciels
 
-Bouton **Bureau** (en haut à droite) : ClassBoard devient transparent et vous écrivez par-dessus
+Bouton **Mode bureau** (en haut à droite) : ClassBoard devient transparent et vous écrivez par-dessus
 n'importe quelle application (navigateur, manuel numérique, PDF…).
 La petite palette permet de revenir à la **souris** pour utiliser l'application, puis de reprendre l'**annotation**.
 Bouton **Tableau** pour revenir au tableau.

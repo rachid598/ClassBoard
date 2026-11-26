@@ -107,6 +107,10 @@ void UBZoomPalette::hide()
 
 void UBZoomPalette::refreshPalette()
 {
+    // ClassBoard : remplacée par la barre de zoom permanente en bas à gauche
+    hide();
+    return;
+
     qreal currentZoomFactor = mBoardController->currentZoom();
     bool showAsNoZoom = (currentZoomFactor > 0.9 && currentZoomFactor < 1.1);
     if (showAsNoZoom)

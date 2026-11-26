@@ -26,6 +26,7 @@ Document de passation destiné à un développeur ou une IA qui reprend le proje
 | Profil enseignant + 15 disciplines | ✅ testé | `src/classboard/ClassBoardProfile*`, `ClassBoardDisciplines*` |
 | Assistant de premier lancement + « Mon profil » | ✅ vérifié visuellement (Linux) | `ClassBoardSetupDialog*` |
 | Barre de favoris | ✅ vérifié (Linux), mise à jour en direct après « Mon profil » | `ClassBoardFavoritesPalette*`, `UBBoardPaletteManager` |
+| Disposition « maquette » : barres flottantes aux coins, couleurs au-dessus des outils | ✅ vérifié (Linux, 1600×900 et 1920×1080, clair et sombre ; Ctrl+Z/Ctrl+Y, menu, modes Documents/Bureau) |
 | Thème clair/sombre, icônes, libellés, taille des boutons | ✅ vérifié (Linux) | `ClassBoardTheme*`, `ClassBoardIcons*`, `resources/etc/ClassBoard*.css` |
 | Minuteur, Tirage au sort | ✅ vérifié (Linux, tirage testé) | `resources/library/applications/*.wgt` |
 | Seyès, polices Marelle/Écolier | ✅ | `ClassBoard.config`, `resources/customizations/fonts` |
@@ -72,6 +73,14 @@ Corrections déjà faites :
 2. Le test `classboard_widgets` échouait tant que les widgets n'étaient pas poussés (normal).
 
 ## 5. Pièges connus
+
+- La barre d'outils d'OpenBoard (`boardToolBar`) est **masquée mais toujours créée** :
+  les groupes de couleurs, le menu ClassBoard et les raccourcis en dépendent. Ne pas la supprimer.
+- Les outils « Zoom + / Zoom − » sont masqués (`setVisible(false)`) mais restent dans le
+  groupe de la barre des outils : l'ordre des actions y correspond à l'énumération
+  `UBStylusTool`, ne pas les retirer de la liste.
+- Profils INI de test : la section générale s'écrit `[%General]` (convention QSettings),
+  pas `[General]`.
 
 - `UBApplication::eventFilter` suppose que `mainWindow`/`boardController` existent :
   une garde a été ajoutée car l'assistant s'affiche avant leur création (sinon plantage).

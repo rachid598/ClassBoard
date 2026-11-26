@@ -26,6 +26,11 @@ Première version de ClassBoard, basée sur OpenBoard 1.7.7 (branche `master`).
   architecture, feuille de route, passation.
 
 ### Modifié
+- **Disposition du tableau conforme à la maquette** : page en plein écran, barres
+  flottantes aux coins (document et menu, fonds/documents/web/mode bureau, zoom, pages),
+  couleurs et épaisseurs au-dessus de la barre des outils, Annuler/Rétablir dans la
+  barre des outils. La grande barre grise d'OpenBoard n'est plus affichée en mode tableau.
+- Pages au format 16:9 par défaut (plus de bandes grises sur les écrans larges).
 - Nom de l'application, icône, informations de version Windows : ClassBoard.
 - Réglages et documents séparés de ceux d'OpenBoard (les deux peuvent cohabiter).
 - Interface en français par défaut, quelle que soit la langue de Windows.

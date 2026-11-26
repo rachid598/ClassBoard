@@ -1,5 +1,6 @@
 # Module ClassBoard (profil enseignant, disciplines, thème, favoris)
 HEADERS += src/classboard/ClassBoardProfile.h \
+           src/classboard/ClassBoardBoardChrome.h \
            src/classboard/ClassBoardDisciplines.h \
            src/classboard/ClassBoardTheme.h \
            src/classboard/ClassBoardSetupDialog.h \
@@ -7,6 +8,7 @@ HEADERS += src/classboard/ClassBoardProfile.h \
            src/classboard/ClassBoardIcons.h
 
 SOURCES += src/classboard/ClassBoardProfile.cpp \
+           src/classboard/ClassBoardBoardChrome.cpp \
            src/classboard/ClassBoardDisciplines.cpp \
            src/classboard/ClassBoardTheme.cpp \
            src/classboard/ClassBoardSetupDialog.cpp \

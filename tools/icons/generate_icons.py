@@ -76,6 +76,7 @@ TOOLS = {
     "duplicate": "M9 9h11v11H9zM5 15H4V4h11v1",
     "rename": "M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4",
     "add": "M12 5v14M5 12h14",
+    "fit": "M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4",
     "bookmark": "M6 3h12v18l-6-4-6 4z",
     "capture-window": "M3 5h18v14H3zM3 9h18",
     # Instruments (barre de favoris)

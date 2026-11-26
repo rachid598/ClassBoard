@@ -262,6 +262,7 @@ class UBBoardController : public UBDocumentContainer
         void newPageAdded();
         void activeSceneChanged();
         void zoomChanged(qreal pZoomFactor);
+        void autosaved(); // ClassBoard : affichage « Enregistré automatiquement »
         void penColorChanged();
         void controlViewportChanged();
         void backgroundChanged();

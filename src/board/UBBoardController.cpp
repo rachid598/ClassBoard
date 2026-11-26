@@ -2031,6 +2031,7 @@ void UBBoardController::autosaveTimeout()
 
     saveData(sf_showProgress);
     UBSettings::settings()->save();
+    emit autosaved(); // ClassBoard
 }
 
 void UBBoardController::appMainModeChanged(UBApplicationController::MainMode md)

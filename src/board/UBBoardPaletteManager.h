@@ -55,6 +55,7 @@ class UBApplicationController;
 class UBStartupHintsPalette;
 class UBPageNavigationWidget;
 class ClassBoardFavoritesPalette;
+class ClassBoardBoardChrome;
 
 class UBBoardPaletteManager : public QObject
 {
@@ -113,6 +114,7 @@ class UBBoardPaletteManager : public QObject
 
         UBStylusPalette *mStylusPalette;
         ClassBoardFavoritesPalette *mFavoritesPalette = nullptr;
+        ClassBoardBoardChrome *mBoardChrome = nullptr;
 
         UBZoomPalette *mZoomPalette;
 	UBStartupHintsPalette* mTipPalette;
