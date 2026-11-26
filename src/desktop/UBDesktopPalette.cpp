@@ -54,26 +54,25 @@ UBDesktopPalette::UBDesktopPalette(QWidget *parent, UBRightPalette* _rightPalett
 {
     QList<QAction*> actions;
 
-    mActionUniboard = new QAction(QIcon(":/images/toolbar/board.png"), tr("Show OpenBoard"), this);
+    mActionUniboard = new QAction(ClassBoardIcons::duotoneIcon("board", QColor("#FFFFFF"), QColor("#4F46E5")), tr("Tableau"), this);
     connect(mActionUniboard, SIGNAL(triggered()), this, SIGNAL(uniboardClick()));
     actions << mActionUniboard;
 
-
-    actions << UBApplication::mainWindow->actionPen;
-    actions << UBApplication::mainWindow->actionEraser;
-    actions << UBApplication::mainWindow->actionMarker;
+    // ClassBoard : bascule évidente Souris (naviguer sur Windows) / Écrire / Surligner / Gommer
     actions << UBApplication::mainWindow->actionSelector;
-    actions << UBApplication::mainWindow->actionPointer;
+    actions << UBApplication::mainWindow->actionPen;
+    actions << UBApplication::mainWindow->actionMarker;
+    actions << UBApplication::mainWindow->actionEraser;
 
     if (UBPlatformUtils::hasVirtualKeyboard())
         actions << UBApplication::mainWindow->actionVirtualKeyboard;
 
-    mActionCustomSelect = new QAction(QIcon(":/images/toolbar/captureArea.png"), tr("Capture Part of the Screen"), this);
+    mActionCustomSelect = new QAction(ClassBoardIcons::duotoneIcon("capture", QColor("#EA580C"), QColor("#FFEDD5")), tr("Capture"), this);
     connect(mActionCustomSelect, SIGNAL(triggered()), this, SIGNAL(customClick()));
     actions << mActionCustomSelect;
 
-    mDisplaySelectAction = new QAction(QIcon(":/images/toolbar/captureScreen.png"), tr("Capture the Screen"), this);
-    connect(mDisplaySelectAction, SIGNAL(triggered()), this, SIGNAL(screenClick()));
+    mDisplaySelectAction = new QAction(ClassBoardIcons::icon("clear-page", ClassBoardIcons::Style::Toolbar, false, QColor("#E11D48")), tr("Effacer"), this);
+    connect(mDisplaySelectAction, SIGNAL(triggered()), UBApplication::mainWindow->actionEraseDesktopAnnotations, SLOT(trigger()));
     actions << mDisplaySelectAction;
 
     QIcon showHideIcon;
@@ -86,7 +85,8 @@ UBDesktopPalette::UBDesktopPalette(QWidget *parent, UBRightPalette* _rightPalett
     actions << mShowHideAction;
 
     setActions(actions);
-    setButtonIconSize(QSize(42, 42));
+    setButtonIconSize(QSize(40, 40));
+    setToolButtonStyle(Qt::ToolButtonTextUnderIcon); // ClassBoard : libellés clairs en mode bureau
 
     adjustSizeAndPosition();
 
@@ -186,11 +186,10 @@ void UBDesktopPalette::maximizeMe()
     clearLayout();
 
     actions << mActionUniboard;
-    actions << UBApplication::mainWindow->actionPen;
-    actions << UBApplication::mainWindow->actionEraser;
-    actions << UBApplication::mainWindow->actionMarker;
     actions << UBApplication::mainWindow->actionSelector;
-    actions << UBApplication::mainWindow->actionPointer;
+    actions << UBApplication::mainWindow->actionPen;
+    actions << UBApplication::mainWindow->actionMarker;
+    actions << UBApplication::mainWindow->actionEraser;
     if (UBPlatformUtils::hasVirtualKeyboard())
         actions << UBApplication::mainWindow->actionVirtualKeyboard;
 

@@ -324,7 +324,10 @@ void UBDesktopAnnotationController::showWindow()
     {
         QRect desktopRect = UBApplication::displayManager->screenGeometry(ScreenRole::Desktop);
 
-        mDesktopPalette->move(5, desktopRect.top() + 150);
+        // ClassBoard : barre du mode bureau placée à droite (cohérente avec le tableau)
+        const int x = qMax(12, desktopRect.width() - mDesktopPalette->width() - 24);
+        const int y = qMax(60, (desktopRect.height() - mDesktopPalette->height()) / 2);
+        mDesktopPalette->move(x, y);
 
         mWindowPositionInitialized = true;
         mDesktopPalette->maximizeMe();

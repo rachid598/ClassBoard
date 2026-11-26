@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<!--
+  ClassBoard — Étiquettes de mots (remettre en ordre ou colorer la grammaire)
+  Copyright (C) 2026 Contributeurs ClassBoard — GPL-3.0
+  Application autonome : aucune ressource réseau.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Étiquettes de mots</title>
+<style>
+  :root {
+    --bg: #FFFFFF; --text: #181C25; --muted: #647084; --border: #E6EAF0;
+    --soft: #F4F6FB; --accent: #4F46E5; --accent-soft: #EEF2FF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: transparent; }
+  body {
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; color: var(--text);
+    -webkit-user-select: none; user-select: none;
+  }
+  .shell {
+    height: 100%; padding: 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 22px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .title { font-size: 15px; font-weight: 700; }
+  .bar { display: flex; gap: 6px; align-items: center; }
+  .btn {
+    height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .btn:hover { background: var(--soft); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  .colors { display: flex; gap: 6px; align-items: center; }
+  .dot {
+    width: 24px; height: 24px; border-radius: 12px; border: 2px solid transparent; cursor: pointer;
+  }
+  .dot.active { border-color: var(--text); transform: scale(1.1); }
+  .board {
+    flex: 1; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 10px;
+    padding: 14px; border-radius: 16px; background: var(--soft); overflow-y: auto;
+  }
+  .chip {
+    padding: 10px 16px; border-radius: 14px; font-size: 20px; font-weight: 700;
+    background: #FFFFFF; border: 2px solid var(--border); cursor: grab;
+    box-shadow: 0 2px 6px rgba(24, 28, 37, 0.06); transition: transform 0.1s;
+  }
+  .chip:active { cursor: grabbing; transform: scale(1.04); }
+  .chip.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
+  .chip[data-tint="yellow"] { background: #FEF08A; border-color: #FACC15; }
+  .chip[data-tint="green"]  { background: #BBF7D0; border-color: #4ADE80; }
+  .chip[data-tint="pink"]   { background: #FBCFE8; border-color: #F472B6; }
+  .chip[data-tint="blue"]   { background: #BAE6FD; border-color: #38BDF8; }
+  .input-row { display: none; gap: 8px; }
+  .input-row.open { display: flex; }
+  input[type="text"] {
+    flex: 1; height: 40px; border-radius: 12px; border: 1px solid var(--border); padding: 0 12px;
+    font: inherit; font-size: 14px; background: var(--soft); color: var(--text);
+    -webkit-user-select: text; user-select: text;
+  }
+  .tip { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div class="title">Étiquettes de mots</div>
+    <div class="colors" title="Couleur à appliquer au clic sur une étiquette">
+      <button class="dot active" data-tint="none" style="background:#FFFFFF;border-color:#CBD5E1;" title="Déplacer / neutre"></button>
+      <button class="dot" data-tint="yellow" style="background:#FEF08A;" title="Jaune (ex. Sujet)"></button>
+      <button class="dot" data-tint="green" style="background:#BBF7D0;" title="Vert (ex. Verbe)"></button>
+      <button class="dot" data-tint="pink" style="background:#FBCFE8;" title="Rose (ex. COD)"></button>
+      <button class="dot" data-tint="blue" style="background:#BAE6FD;" title="Bleu"></button>
+    </div>
+    <div class="bar">
+      <button class="btn" id="shuffleBtn">Mélanger</button>
+      <button class="btn" id="editBtn">Phrase…</button>
+    </div>
+  </div>
+
+  <div class="input-row" id="inputRow">
+    <input type="text" id="sentenceInput" placeholder="Tapez une phrase (chaque mot devient une étiquette)…">
+    <button class="btn primary" id="applyBtn">Créer</button>
+  </div>
+
+  <div class="board" id="board"></div>
+  <div class="tip">Cliquez deux étiquettes pour les échanger (ou glissez), ou choisissez une couleur ci-dessus pour classer les mots.</div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DEFAULT_SENTENCE = "Every morning Tom wakes up at 7:30";
+  var items = [];
+  var activeTint = "none";
+  var selectedIdx = -1;
+  var dragIdx = -1;
+
+  var board = document.getElementById("board");
+  var inputRow = document.getElementById("inputRow");
+  var sentenceInput = document.getElementById("sentenceInput");
+
+  function savePref(k, v) {
+    try { if (window.sankore && window.sankore.setPreference) window.sankore.setPreference(k, String(v)); } catch (e) {}
+  }
+
+  function loadPref(k, fallback) {
+    try {
+      if (window.sankore && window.sankore.async && window.sankore.async.preference)
+        return window.sankore.async.preference(k, String(fallback));
+      if (window.sankore && window.sankore.preference)
+        return Promise.resolve(window.sankore.preference(k, String(fallback)));
+    } catch (e) {}
+    return Promise.resolve(String(fallback));
+  }
+
+  function buildFromSentence(text) {
+    var parts = String(text || "").trim().split(/\s+/).filter(Boolean);
+    items = parts.map(function (w) { return { text: w, tint: "none" }; });
+    selectedIdx = -1;
+    render();
+  }
+
+  function render() {
+    board.innerHTML = "";
+    items.forEach(function (item, i) {
+      var el = document.createElement("div");
+      el.className = "chip" + (i === selectedIdx ? " selected" : "");
+      el.textContent = item.text;
+      el.draggable = true;
+      if (item.tint && item.tint !== "none") el.setAttribute("data-tint", item.tint);
+
+      el.addEventListener("click", function () {
+        if (activeTint !== "none") {
+          item.tint = item.tint === activeTint ? "none" : activeTint;
+          render();
+          return;
+        }
+        if (selectedIdx < 0) {
+          selectedIdx = i;
+        } else if (selectedIdx === i) {
+          selectedIdx = -1;
+        } else {
+          var tmp = items[selectedIdx];
+          items[selectedIdx] = items[i];
+          items[i] = tmp;
+          selectedIdx = -1;
+        }
+        render();
+      });
+
+      el.addEventListener("dragstart", function () { dragIdx = i; });
+      el.addEventListener("dragover", function (e) { e.preventDefault(); });
+      el.addEventListener("drop", function (e) {
+        e.preventDefault();
+        if (dragIdx >= 0 && dragIdx !== i) {
+          var moved = items.splice(dragIdx, 1)[0];
+          items.splice(i, 0, moved);
+          dragIdx = -1;
+          selectedIdx = -1;
+          render();
+        }
+      });
+
+      board.appendChild(el);
+    });
+  }
+
+  var dots = document.querySelectorAll(".dot");
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].addEventListener("click", function () {
+      activeTint = this.getAttribute("data-tint");
+      for (var j = 0; j < dots.length; j++) dots[j].classList.remove("active");
+      this.classList.add("active");
+      selectedIdx = -1;
+      render();
+    });
+  }
+
+  document.getElementById("shuffleBtn").addEventListener("click", function () {
+    for (var i = items.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = items[i]; items[i] = items[j]; items[j] = tmp;
+    }
+    selectedIdx = -1;
+    render();
+  });
+
+  document.getElementById("editBtn").addEventListener("click", function () {
+    inputRow.classList.toggle("open");
+    if (inputRow.classList.contains("open")) sentenceInput.focus();
+  });
+
+  document.getElementById("applyBtn").addEventListener("click", function () {
+    var val = sentenceInput.value.trim();
+    if (!val) return;
+    savePref("sentence", val);
+    buildFromSentence(val);
+    inputRow.classList.remove("open");
+  });
+
+  sentenceInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("applyBtn").click();
+  });
+
+  loadPref("sentence", DEFAULT_SENTENCE).then(function (val) {
+    var text = val && val.trim() ? val : DEFAULT_SENTENCE;
+    sentenceInput.value = text;
+    buildFromSentence(text);
+  });
+})();
+</script>
+</body>
+</html>

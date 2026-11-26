@@ -1,5 +1,7 @@
 # Module ClassBoard (profil enseignant, disciplines, thème, favoris)
 target_sources(${PROJECT_NAME} PRIVATE
+    ClassBoardBackgroundPopover.cpp
+    ClassBoardBackgroundPopover.h
     ClassBoardBoardChrome.cpp
     ClassBoardBoardChrome.h
     ClassBoardDisciplines.cpp
@@ -14,4 +16,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     ClassBoardSetupDialog.h
     ClassBoardTheme.cpp
     ClassBoardTheme.h
+    ClassBoardToolsDrawer.cpp
+    ClassBoardToolsDrawer.h
 )

@@ -47,6 +47,10 @@ public:
     static QIcon icon(const QString& name, Style style = Style::Tool, bool withMenuArrow = false,
                       const QColor& color = QColor());
 
+    /// Icône bicolore moderne dans une pastille pastel (état normal + actif).
+    static QIcon duotoneIcon(const QString& name, const QColor& fgColor, const QColor& bgColor,
+                             const QColor& activeFg = QColor(), const QColor& activeBg = QColor());
+
     /// Nom d'icône associé à un favori (ex. "openboardtool://ruler" -> "ruler"). Vide si inconnu.
     static QString iconNameForFavorite(const QString& favorite);
 

@@ -41,6 +41,7 @@ class ClassBoardProfile
 {
 public:
     enum class Theme { Light, Dark, System };
+    enum class ToolbarSide { Right, Left };
 
     // --- Emplacements -------------------------------------------------------
     static bool isPortable();
@@ -64,6 +65,12 @@ public:
     static void setTheme(Theme theme);
     static QString themeToString(Theme theme);
     static Theme themeFromString(const QString& value);
+
+    /// Côté de la barre verticale du tableau (droite par défaut, gauche pour gauchers).
+    static ToolbarSide toolbarSide();
+    static void setToolbarSide(ToolbarSide side);
+    static QString toolbarSideToString(ToolbarSide side);
+    static ToolbarSide toolbarSideFromString(const QString& value);
 
     /// Taille des boutons de la barre d'outils, en pourcentage (100, 125 ou 150).
     static int toolbarScale();

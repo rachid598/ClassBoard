@@ -37,6 +37,7 @@ namespace
     const char* kFirstRunCompleted = "General/FirstRunCompleted";
     const char* kDisciplines       = "General/Disciplines";
     const char* kTheme             = "Appearance/Theme";
+    const char* kToolbarSide       = "Appearance/ToolbarSide";
     const char* kToolbarScale      = "Appearance/ToolbarScale";
     const char* kShowToolLabels    = "Appearance/ShowToolLabels";
     const char* kLanguage          = "General/Language";
@@ -160,6 +161,26 @@ ClassBoardProfile::Theme ClassBoardProfile::themeFromString(const QString& value
         return Theme::System;
 
     return Theme::Light;
+}
+
+ClassBoardProfile::ToolbarSide ClassBoardProfile::toolbarSide()
+{
+    return toolbarSideFromString(value(kToolbarSide, "right").toString());
+}
+
+void ClassBoardProfile::setToolbarSide(ToolbarSide side)
+{
+    setValue(kToolbarSide, toolbarSideToString(side));
+}
+
+QString ClassBoardProfile::toolbarSideToString(ToolbarSide side)
+{
+    return side == ToolbarSide::Left ? QStringLiteral("left") : QStringLiteral("right");
+}
+
+ClassBoardProfile::ToolbarSide ClassBoardProfile::toolbarSideFromString(const QString& value)
+{
+    return value.trimmed().toLower() == QLatin1String("left") ? ToolbarSide::Left : ToolbarSide::Right;
 }
 
 int ClassBoardProfile::toolbarScale()

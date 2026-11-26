@@ -65,5 +65,9 @@ public:
     /// Icône SVG recolorée selon le thème (le SVG doit utiliser "currentColor").
     static QIcon tintedIcon(const QString& svgResource, const QColor& color, int size = 48);
 
+    /// Icône bicolore moderne dans une pastille arrondie pastel (style 2026).
+    static QIcon duotoneIcon(const QString& svgResource, const QColor& fgColor, const QColor& bgColor,
+                             int size = 44, int cornerRadius = 12);
+
     static QString colorName(const QColor& color);
 };

@@ -23,20 +23,19 @@ Document de passation destiné à un développeur ou une IA qui reprend le proje
 | Renommage ClassBoard (exe, icône, réglages séparés, RC Windows, À propos) | ✅ | `UBApplication.cpp`, `resources/win/`, `UBPreferencesController.cpp` |
 | Français par défaut | ✅ | `UBApplication::setupTranslators` |
 | Pas de requête réseau de mise à jour | ✅ | `ClassBoard.config`, `UBApplicationController::checkUpdate` |
-| Profil enseignant + 15 disciplines | ✅ testé | `src/classboard/ClassBoardProfile*`, `ClassBoardDisciplines*` |
-| Assistant de premier lancement + « Mon profil » | ✅ vérifié visuellement (Linux) | `ClassBoardSetupDialog*` |
-| Barre de favoris | ✅ vérifié (Linux), mise à jour en direct après « Mon profil » | `ClassBoardFavoritesPalette*`, `UBBoardPaletteManager` |
-| Disposition « maquette » : barres flottantes aux coins, couleurs au-dessus des outils | ✅ vérifié (Linux, 1600×900 et 1920×1080, clair et sombre ; Ctrl+Z/Ctrl+Y, menu, modes Documents/Bureau) |
-| Thème clair/sombre, icônes, libellés, taille des boutons | ✅ vérifié (Linux) | `ClassBoardTheme*`, `ClassBoardIcons*`, `resources/etc/ClassBoard*.css` |
-| Minuteur, Tirage au sort | ✅ vérifié (Linux, tirage testé) | `resources/library/applications/*.wgt` |
+| Profil enseignant + 15 disciplines + côté de la barre (Droite/Gauche) | ✅ testé | `src/classboard/ClassBoardProfile*`, `ClassBoardDisciplines*` |
+| Accueil 1 écran (tuiles bicolores) + « Mes matières et préférences » (live) | ✅ vérifié visuellement (Linux/Xvfb) | `ClassBoardSetupDialog*` |
+| Barre verticale moderne à droite (6 outils + bulle couleurs/surligneurs) | ✅ vérifié visuellement (Linux/Xvfb, clair et ardoise) | `ClassBoardBoardChrome*` |
+| Tiroir « Outils pédagogiques » filtré par discipline + Sélecteur de fonds moderne | ✅ vérifié visuellement (Linux/Xvfb) | `ClassBoardToolsDrawer*`, `ClassBoardBackgroundPopover*` |
+| Thème clair (blanc défaut) / ardoise sombre 1-clic, icônes bicolores | ✅ vérifié (Linux) | `ClassBoardTheme*`, `ClassBoardIcons*`, `resources/etc/ClassBoard*.css` |
+| Minuteur, Tirage au sort, Vocabulaire (flashcards), Étiquettes de mots | ✅ vérifié (Linux, CTest widgets hors connexion OK) | `resources/library/applications/*.wgt` |
 | Seyès, polices Marelle/Écolier | ✅ | `ClassBoard.config`, `resources/customizations/fonts` |
 | Mode portable | ✅ (logique testée, pas testé sous Windows réel) | `UBSettings::userDataDirectory`, `ClassBoardProfile::isPortable` |
 | CI Linux (compilation + tests) | voir §4 | `.github/workflows/build.yml` |
-| CI Windows (exe/msi/zip/SHA256) | voir §4 | `scripts/windows/*`, `packaging/windows/*` |
+| CI Windows (exe/msi/zip/SHA256) | voir §4 (à relancer après push de la refonte UI) | `scripts/windows/*`, `packaging/windows/*` |
 | Documentation | ✅ | `README.md`, `docs/`, `ARCHITECTURE.md`, `ROADMAP.md`… |
 
-Captures : `docs/images/` (prises sous Linux/Xvfb). Maquette de design initiale publiée en
-Artifact claude.ai (privé, propriétaire du dépôt).
+Captures réelles mises à jour : `docs/images/` (prises sous Linux/Xvfb 1600×900).
 
 ## 3. Ce qui n'a PAS été vérifié
 

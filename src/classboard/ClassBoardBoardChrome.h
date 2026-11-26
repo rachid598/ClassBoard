@@ -21,30 +21,32 @@
 
 #pragma once
 
+#include <QList>
 #include <QObject>
 #include <QRect>
 
+class ClassBoardBackgroundPopover;
+class ClassBoardToolsDrawer;
 class QAction;
 class QFrame;
 class QLabel;
+class QPushButton;
 class QToolButton;
 class QWidget;
-class UBToolbarButtonGroup;
 
 /**
- * @brief Habillage du tableau en mode « plein écran » (maquette ClassBoard).
+ * @brief Interface flottante moderne du tableau ClassBoard.
  *
- * Remplace la grande barre d'outils d'OpenBoard par des barres flottantes
- * discrètes posées aux coins de la page, pour laisser la place à l'écriture :
+ * Remplace les barres traditionnelles par un habillage léger et aéré :
+ *   - en haut à gauche  : logo ClassBoard, titre du cours, témoin de sauvegarde ;
+ *   - en haut à droite  : Fonds, Documents, Bureau, bascule Clair/Ardoise, menu ;
+ *   - sur le côté droit (ou gauche) : barre verticale de 6 outils essentiels
+ *     (Choisir, Écrire, Surligner, Gommer, Texte, Outils) + Annuler/Rétablir ;
+ *   - bulle contextuelle à côté de l'outil actif : couleurs rondes, épaisseurs,
+ *     ou tailles de gomme + Tout effacer ;
+ *   - en bas à droite   : navigation compacte des pages (< 1 / 1 > + Page).
  *
- *   - en haut à gauche : menu ClassBoard, nom du document, sauvegarde ;
- *   - en haut à droite : fonds, documents, web, mode bureau ;
- *   - en bas à gauche  : zoom ;
- *   - en bas à droite  : navigation entre les pages, nouvelle page ;
- *   - au-dessus de la barre des outils : couleurs et épaisseurs du stylo.
- *
- * Toutes les commandes réutilisent les actions existantes d'OpenBoard
- * (aucune logique de tableau n'est dupliquée).
+ * Tout le bas du tableau reste entièrement dégagé pour écrire.
  */
 class ClassBoardBoardChrome : public QObject
 {
@@ -52,21 +54,23 @@ class ClassBoardBoardChrome : public QObject
 
 public:
     /// Hauteur réservée en haut du tableau par les barres flottantes.
-    static constexpr int TopReservedHeight = 96;
+    static constexpr int TopReservedHeight = 84;
 
     ClassBoardBoardChrome(QWidget* container, QObject* parent = nullptr);
 
     /// Place les barres dans la zone utile du tableau.
     void place(const QRect& area);
 
-    /// Barre des outils au-dessus de laquelle s'affichent couleurs et épaisseurs.
+    /// Conservé pour compatibilité d'appel (la barre verticale est intégrée).
     void setInkAnchor(QWidget* anchor);
 
     void setVisible(bool visible);
 
-    /// Zone libre à gauche du tableau, entre les barres du haut et la barre de zoom
-    /// (utilisée pour placer la barre de favoris).
+    /// Zone libre sur le côté opposé à la barre d'outils.
     QRect leftFreeArea() const;
+
+    /// Applique immédiatement les changements de profil (thème, côté, libellés, disciplines).
+    void reloadFromProfile();
 
 public slots:
     void refreshDocumentInfo();
@@ -75,37 +79,78 @@ public slots:
 private slots:
     void refreshZoom();
     void stylusToolChanged(int tool);
+    void refreshColorSwatches();
+    void refreshWidthSelection();
+    void toggleBackgroundPopover();
+    void toggleToolsDrawer();
+    void toggleDarkMode();
     void showMainMenu();
 
 protected:
     bool eventFilter(QObject* watched, QEvent* event) override;
 
 private:
-    void placeInkBar();
-    QFrame* createPill(const QString& name);
-    QToolButton* createActionButton(QWidget* parent, QAction* action, bool showText = false);
-    QToolButton* createButton(QWidget* parent, const QString& iconName, const QString& text, bool showText = false);
+    void applyStyles();
+    void rebuildToolIcons();
+    void placeToolPopover();
+    void placeBackgroundPopover();
+    void placeToolsDrawer();
+    void closePopovers();
+    void selectColor(int index);
+    void selectWidth(int index);
+    void selectTool(int tool);
+    QFrame* createPill(const QString& name, int radius = 20);
+    QToolButton* createToolRailButton(const QString& label, const QString& tooltip);
+    QToolButton* createIconButton(QWidget* parent, const QString& iconName, const QString& tooltip);
     void raiseAll();
 
-    QWidget* mContainer;
+    QWidget* mContainer = nullptr;
 
     QFrame* mDocumentBar = nullptr;
     QFrame* mModeBar = nullptr;
+    QFrame* mToolRail = nullptr;
+    QFrame* mToolPopover = nullptr;
     QFrame* mZoomBar = nullptr;
     QFrame* mPageBar = nullptr;
-    QFrame* mInkBar = nullptr;
+
+    ClassBoardBackgroundPopover* mBackgroundPopover = nullptr;
+    ClassBoardToolsDrawer* mToolsDrawer = nullptr;
 
     QToolButton* mMenuButton = nullptr;
     QLabel* mTitleLabel = nullptr;
-    QLabel* mSavedLabel = nullptr;
-    QLabel* mZoomLabel = nullptr;
-    QLabel* mPageLabel = nullptr;
+    QLabel* mSaveDot = nullptr;
 
-    UBToolbarButtonGroup* mColorChoice = nullptr;
-    UBToolbarButtonGroup* mLineWidthChoice = nullptr;
-    UBToolbarButtonGroup* mEraserWidthChoice = nullptr;
+    QToolButton* mBackgroundsButton = nullptr;
+    QToolButton* mDocumentsButton = nullptr;
+    QToolButton* mDesktopButton = nullptr;
+    QToolButton* mThemeButton = nullptr;
+    QToolButton* mMoreButton = nullptr;
+
+    // 6 boutons essentiels de la barre verticale
+    QToolButton* mSelectBtn = nullptr;
+    QToolButton* mPenBtn = nullptr;
+    QToolButton* mMarkerBtn = nullptr;
+    QToolButton* mEraserBtn = nullptr;
+    QToolButton* mTextBtn = nullptr;
+    QToolButton* mToolsBtn = nullptr;
+    QToolButton* mUndoBtn = nullptr;
+    QToolButton* mRedoBtn = nullptr;
+
+    // Contenu de la bulle contextuelle (couleurs / épaisseurs / tout effacer)
+    QWidget* mColorsRow = nullptr;
+    QList<QToolButton*> mColorButtons;
+    QWidget* mWidthsRow = nullptr;
+    QList<QToolButton*> mWidthButtons;
+    QPushButton* mClearPageBtn = nullptr;
+
+    QLabel* mZoomLabel = nullptr;
+    QToolButton* mPageLabelBtn = nullptr;
+    QToolButton* mNewPageBtn = nullptr;
+    QToolButton* mPrevPageBtn = nullptr;
+    QToolButton* mNextPageBtn = nullptr;
 
     QRect mArea;
-    QWidget* mInkAnchor = nullptr;
     bool mVisible = true;
+    bool mPopoverSuppressed = false;
+    int mCurrentTool = -1;
 };

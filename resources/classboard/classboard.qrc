@@ -72,6 +72,16 @@
     <file>tools/web.svg</file>
     <file>tools/zoom-in.svg</file>
     <file>tools/zoom-out.svg</file>
+    <file>tools/moon.svg</file>
+    <file>tools/sun.svg</file>
+    <file>tools/more.svg</file>
+    <file>tools/vocabulaire.svg</file>
+    <file>tools/etiquettes.svg</file>
+    <file>tools/image.svg</file>
+    <file>tools/pdf.svg</file>
+    <file>tools/sparkles.svg</file>
+    <file>tools/close.svg</file>
+    <file>tools/search.svg</file>
     <file>classboard.svg</file>
 </qresource>
 <qresource prefix="/images">

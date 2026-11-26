@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:ub="http://uniboard.mnemis.com/widgets"
+        id="classboard.vocabulaire"
+        version="1.0"
+        width="480"
+        height="380"
+        ub:resizable="true">
+
+    <name>Vocabulaire</name>
+    <author>Contributeurs ClassBoard</author>
+    <description>Cartes mémoire recto-verso (flashcards) pour travailler le vocabulaire en anglais, langues ou français. Fonctionne hors connexion.</description>
+    <license href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</license>
+
+    <content src="index.html"/>
+</widget>

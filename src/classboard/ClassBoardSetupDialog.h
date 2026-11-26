@@ -24,22 +24,21 @@
 #include <QDialog>
 #include <QMap>
 
-class QAbstractButton;
 class QButtonGroup;
 class QCheckBox;
 class QLabel;
-class QListWidget;
 class QPushButton;
 class QRadioButton;
 class QStackedWidget;
 class QToolButton;
 
 /**
- * @brief Assistant de premier lancement et écran "Mon profil ClassBoard".
+ * @brief Accueil de premier lancement (1 écran rapide) et réglages « Mes matières ».
  *
- * Mode FirstRun : trois étapes (disciplines, apparence, favoris) affichées au
- * tout premier démarrage. Mode Settings : mêmes pages, accessibles à tout
- * moment depuis le menu, avec un bouton de réinitialisation.
+ * Mode FirstRun : un seul écran chaleureux pour choisir sa ou ses matières
+ * (Anglais, Français, etc.) et commencer immédiatement.
+ * Mode Settings : accès direct aux matières et à l'apparence (côté de la barre,
+ * thème clair/ardoise, taille des boutons, libellés), appliqués en direct.
  */
 class ClassBoardSetupDialog : public QDialog
 {
@@ -50,47 +49,36 @@ public:
 
     explicit ClassBoardSetupDialog(Mode mode, QWidget* parent = nullptr);
 
-    /// Affiche l'assistant si le premier lancement n'a pas encore eu lieu.
-    /// Retourne vrai si l'assistant a été affiché.
+    /// Affiche l'accueil si le premier lancement n'a pas encore eu lieu.
+    /// Retourne vrai si l'écran a été affiché.
     static bool runFirstLaunchIfNeeded();
 
-    /// Vrai si l'utilisateur a modifié un réglage qui nécessite un redémarrage.
-    bool restartRequired() const { return mRestartRequired; }
-
 private slots:
-    void goNext();
-    void goBack();
     void skip();
     void saveAndClose();
     void resetProfile();
     void updateState();
-    void restoreDisciplineFavorites();
 
 private:
     QWidget* buildHeader();
     QWidget* buildDisciplinesPage();
     QWidget* buildAppearancePage();
-    QWidget* buildFavoritesPage();
     QWidget* buildFooter();
 
     QStringList selectedDisciplines() const;
     void loadFromProfile();
-    void fillFavorites(const QStringList& favorites);
-    void refreshFavoritesIfUntouched();
-    QStringList checkedFavorites() const;
     void save();
 
     Mode mMode;
-    bool mRestartRequired = false;
 
     QStackedWidget* mPages = nullptr;
-    QLabel* mStepLabel = nullptr;
-    QList<QLabel*> mStepBars;
     QButtonGroup* mNavGroup = nullptr;
 
     QMap<QString, QToolButton*> mDisciplineButtons;
     QLabel* mSelectionSummary = nullptr;
 
+    QRadioButton* mSideRight = nullptr;
+    QRadioButton* mSideLeft = nullptr;
     QRadioButton* mThemeLight = nullptr;
     QRadioButton* mThemeDark = nullptr;
     QRadioButton* mThemeSystem = nullptr;
@@ -98,14 +86,6 @@ private:
     QRadioButton* mSize125 = nullptr;
     QRadioButton* mSize150 = nullptr;
     QCheckBox* mShowLabels = nullptr;
-    QCheckBox* mShowFavoritesBar = nullptr;
 
-    QListWidget* mFavorites = nullptr;
-    bool mFavoritesTouched = false;   // l'enseignant a modifié la liste des favoris
-    bool mFillingFavorites = false;
-
-    QPushButton* mSkipButton = nullptr;
-    QPushButton* mBackButton = nullptr;
-    QPushButton* mNextButton = nullptr;
-    QPushButton* mResetButton = nullptr;
+    QPushButton* mPrimaryButton = nullptr;
 };

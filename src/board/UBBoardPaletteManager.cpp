@@ -243,14 +243,14 @@ void UBBoardPaletteManager::setupPalettes()
     // Add the other palettes
     mStylusPalette = new UBStylusPalette(mContainer, UBSettings::settings()->appToolBarOrientationVertical->get().toBool() ? Qt::Vertical : Qt::Horizontal);
     connect(mStylusPalette, SIGNAL(stylusToolDoubleClicked(int)), UBApplication::boardController, SLOT(stylusToolDoubleClicked(int)));
-    mStylusPalette->show(); // always show stylus palette at startup
+    mStylusPalette->hide(); // ClassBoard : remplacée par la barre verticale moderne à droite
 
-    // ClassBoard : barre des outils favoris (selon les disciplines)
+    // ClassBoard : barre des outils favoris conservée en réserve (remplacée par le tiroir Outils)
     mFavoritesPalette = new ClassBoardFavoritesPalette(mContainer);
     connect(mFavoritesPalette, &ClassBoardFavoritesPalette::editRequested, this, &UBBoardPaletteManager::showClassBoardProfile);
-    mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar());
+    mFavoritesPalette->hide();
 
-    // ClassBoard : barres flottantes aux coins du tableau (remplacent la barre d'OpenBoard)
+    // ClassBoard : barres flottantes modernes du tableau (barre verticale à droite, bas libre)
     mBoardChrome = new ClassBoardBoardChrome(mContainer, this);
     mBoardChrome->setInkAnchor(mStylusPalette);
     connect(UBApplication::boardController, &UBBoardController::autosaved, mBoardChrome, &ClassBoardBoardChrome::markSaved);
@@ -636,7 +636,9 @@ void UBBoardPaletteManager::backgroundPaletteClosed()
 
 void UBBoardPaletteManager::toggleStylusPalette(bool checked)
 {
-    mStylusPalette->setVisible(checked);
+    Q_UNUSED(checked);
+    // ClassBoard : la barre d'outils principale est portée par ClassBoardBoardChrome.
+    mStylusPalette->hide();
 }
 
 
@@ -732,22 +734,22 @@ void UBBoardPaletteManager::changeMode(eUBDockPaletteWidgetMode newMode, bool is
                         mKeyboardPalette->setParent(UBApplication::boardController->controlContainer());
                 }
 
-                mLeftPalette->setVisible(leftPaletteVisible);
-                mRightPalette->setVisible(rightPaletteVisible);
-#ifdef Q_OS_WIN
-                if (rightPaletteVisible)
-                    mRightPalette->setAdditionalVOffset(0);
-#endif
+                // ClassBoard : onglets gris d'OpenBoard masqués par défaut sur le tableau
+                // (le panneau des pages reste accessible en cliquant sur « 1 / 1 »).
+                Q_UNUSED(leftPaletteVisible);
+                Q_UNUSED(rightPaletteVisible);
+                mLeftPalette->setVisible(false);
+                mRightPalette->setVisible(false);
 
                 if (mFavoritesPalette)
-                {
-                    mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar());
-                    mLeftPalette->stackUnder(mFavoritesPalette);
-                }
+                    mFavoritesPalette->hide();
 
                 // ClassBoard : onglets des panneaux latéraux sous les barres flottantes du haut
                 mLeftPalette->setAdditionalVOffset(ClassBoardBoardChrome::TopReservedHeight);
                 mRightPalette->setAdditionalVOffset(ClassBoardBoardChrome::TopReservedHeight);
+
+                if (mBoardChrome)
+                    mBoardChrome->setVisible(true);
 
                 if( !isInit )
                     containerResized();
@@ -758,6 +760,8 @@ void UBBoardPaletteManager::changeMode(eUBDockPaletteWidgetMode newMode, bool is
 
         case eUBDockPaletteWidget_DESKTOP:
             {
+                if (mBoardChrome)
+                    mBoardChrome->setVisible(false);
                 mAddItemPalette->setParent((QWidget*)UBApplication::applicationController->uninotesController()->drawingView());
                 mLeftPalette->assignParent((QWidget*)UBApplication::applicationController->uninotesController()->drawingView());
                 mRightPalette->assignParent((QWidget*)UBApplication::applicationController->uninotesController()->drawingView());
@@ -1047,7 +1051,8 @@ void UBBoardPaletteManager::changeStylusPaletteOrientation(QVariant var)
     connect(mStylusPalette, SIGNAL(stylusToolDoubleClicked(int)), UBApplication::boardController, SLOT(stylusToolDoubleClicked(int)));
     if (mBoardChrome)
         mBoardChrome->setInkAnchor(mStylusPalette);
-    mStylusPalette->setVisible(bVisible); // always show stylus palette at startup
+    Q_UNUSED(bVisible);
+    mStylusPalette->hide(); // ClassBoard : remplacée par la barre verticale moderne
 }
 
 
@@ -1085,13 +1090,11 @@ void UBBoardPaletteManager::showClassBoardProfile()
     if (dialog.exec() != QDialog::Accepted)
         return;
 
+    if (mBoardChrome)
+        mBoardChrome->reloadFromProfile();
+
     if (mFavoritesPalette)
-    {
         mFavoritesPalette->reload();
-        mFavoritesPalette->setVisible(ClassBoardProfile::showFavoritesBar()
-                                      && UBApplication::applicationController
-                                      && UBApplication::applicationController->displayMode() == UBApplicationController::Board
-                                      && !UBApplication::applicationController->isShowingDesktop());
-        containerResized();
-    }
+
+    containerResized();
 }

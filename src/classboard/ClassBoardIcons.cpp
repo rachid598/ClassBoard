@@ -134,6 +134,24 @@ QIcon ClassBoardIcons::icon(const QString& name, Style style, bool withMenuArrow
     return icon;
 }
 
+QIcon ClassBoardIcons::duotoneIcon(const QString& name, const QColor& fgColor, const QColor& bgColor,
+                                   const QColor& activeFg, const QColor& activeBg)
+{
+    const QString resource = QStringLiteral(":/classboard/tools/%1.svg").arg(name);
+    const QIcon offIcon = ClassBoardTheme::duotoneIcon(resource, fgColor, bgColor, 44, 13);
+    const QIcon onIcon = ClassBoardTheme::duotoneIcon(resource,
+                                                      activeFg.isValid() ? activeFg : fgColor,
+                                                      activeBg.isValid() ? activeBg : bgColor,
+                                                      44, 13);
+
+    QIcon icon;
+    for (const QSize& s : offIcon.availableSizes())
+        icon.addPixmap(offIcon.pixmap(s), QIcon::Normal, QIcon::Off);
+    for (const QSize& s : onIcon.availableSizes())
+        icon.addPixmap(onIcon.pixmap(s), QIcon::Normal, QIcon::On);
+    return icon;
+}
+
 QString ClassBoardIcons::iconNameForFavorite(const QString& favorite)
 {
     static const QHash<QString, QString> names = {
@@ -147,6 +165,8 @@ QString ClassBoardIcons::iconNameForFavorite(const QString& favorite)
         {"openboardtool://magnifier", "magnifier"},
         {"widget:Minuteur", "timer"},
         {"widget:TirageAuSort", "dice"},
+        {"widget:Vocabulaire", "vocabulaire"},
+        {"widget:Etiquettes", "etiquettes"},
         {"widget:Stopwatch", "stopwatch"},
         {"widget:Calculator", "calculator"},
         {"widget:GraphMe", "graph"},
@@ -161,9 +181,28 @@ void ClassBoardIcons::applyDrawingToolIcons(UBMainWindow* w, bool withMenuArrow)
     if (!w)
         return;
 
-    w->actionPen->setIcon(icon("pen", Style::Tool, withMenuArrow));
-    w->actionMarker->setIcon(icon("marker", Style::Tool, withMenuArrow));
-    w->actionEraser->setIcon(icon("eraser", Style::Tool, withMenuArrow));
+    const bool dark = ClassBoardTheme::isDark();
+    if (withMenuArrow)
+    {
+        w->actionPen->setIcon(icon("pen", Style::Tool, true, dark ? QColor("#60A5FA") : QColor("#2563EB")));
+        w->actionMarker->setIcon(icon("marker", Style::Tool, true, dark ? QColor("#FBBF24") : QColor("#D97706")));
+        w->actionEraser->setIcon(icon("eraser", Style::Tool, true, dark ? QColor("#FB7185") : QColor("#E11D48")));
+    }
+    else
+    {
+        w->actionPen->setIcon(duotoneIcon("pen",
+                                          dark ? QColor("#93C5FD") : QColor("#2563EB"),
+                                          dark ? QColor(37, 99, 235, 55) : QColor("#DBEAFE"),
+                                          QColor("#FFFFFF"), QColor("#2563EB")));
+        w->actionMarker->setIcon(duotoneIcon("marker",
+                                             dark ? QColor("#FCD34D") : QColor("#B45309"),
+                                             dark ? QColor(217, 119, 6, 55) : QColor("#FEF3C7"),
+                                             QColor("#78350F"), QColor("#FDE047")));
+        w->actionEraser->setIcon(duotoneIcon("eraser",
+                                             dark ? QColor("#FDA4AF") : QColor("#E11D48"),
+                                             dark ? QColor(225, 29, 72, 55) : QColor("#FFE4E6"),
+                                             QColor("#FFFFFF"), QColor("#E11D48")));
+    }
 }
 
 void ClassBoardIcons::applyToMainWindow(UBMainWindow* w)
@@ -171,25 +210,33 @@ void ClassBoardIcons::applyToMainWindow(UBMainWindow* w)
     if (!w)
         return;
 
+    const bool dark = ClassBoardTheme::isDark();
+
     // Palette des stylets
     applyDrawingToolIcons(w, false);
-    w->actionSelector->setIcon(icon("selector"));
+    w->actionSelector->setIcon(duotoneIcon("selector",
+                                           dark ? QColor("#A5B4FC") : QColor("#4F46E5"),
+                                           dark ? QColor(79, 70, 229, 55) : QColor("#EEF2FF"),
+                                           QColor("#FFFFFF"), QColor("#4F46E5")));
     w->actionPlay->setIcon(icon("play"));
     w->actionHand->setIcon(icon("hand"));
     w->actionZoomIn->setIcon(icon("zoom-in"));
     w->actionZoomOut->setIcon(icon("zoom-out"));
     w->actionPointer->setIcon(icon("laser"));
     w->actionLine->setIcon(icon("line"));
-    w->actionText->setIcon(icon("text"));
+    w->actionText->setIcon(duotoneIcon("text",
+                                       dark ? QColor("#CBD5E1") : QColor("#475569"),
+                                       dark ? QColor(148, 163, 184, 45) : QColor("#F1F5F9"),
+                                       QColor("#FFFFFF"), QColor("#475569")));
     w->actionCapture->setIcon(icon("capture"));
     w->actionVirtualKeyboard->setIcon(icon("keyboard"));
     w->actionSnap->setIcon(icon("snap"));
 
-    // Libellés courts affichés sous les icônes (les infobulles gardent le texte complet)
-    w->actionPen->setIconText(QObject::tr("Stylo"));
-    w->actionEraser->setIconText(QObject::tr("Gomme"));
-    w->actionMarker->setIconText(QObject::tr("Surligneur"));
-    w->actionSelector->setIconText(QObject::tr("Sélection"));
+    // Libellés simples et directs affichés sous les icônes
+    w->actionPen->setIconText(QObject::tr("Écrire"));
+    w->actionEraser->setIconText(QObject::tr("Gommer"));
+    w->actionMarker->setIconText(QObject::tr("Surligner"));
+    w->actionSelector->setIconText(QObject::tr("Choisir"));
     w->actionPlay->setIconText(QObject::tr("Interagir"));
     w->actionHand->setIconText(QObject::tr("Déplacer"));
     w->actionZoomIn->setIconText(QObject::tr("Zoom +"));

@@ -190,6 +190,25 @@ private slots:
         QVERIFY(ClassBoardProfile::profileDirectory().startsWith(QCoreApplication::applicationDirPath()));
         qunsetenv("CLASSBOARD_PORTABLE");
     }
+
+    void toolbarSideDefaultsRightAndRoundTrips()
+    {
+        QCOMPARE(ClassBoardProfile::toolbarSide(), ClassBoardProfile::ToolbarSide::Right);
+        ClassBoardProfile::setToolbarSide(ClassBoardProfile::ToolbarSide::Left);
+        QCOMPARE(ClassBoardProfile::toolbarSide(), ClassBoardProfile::ToolbarSide::Left);
+        ClassBoardProfile::setToolbarSide(ClassBoardProfile::ToolbarSide::Right);
+        QCOMPARE(ClassBoardProfile::toolbarSide(), ClassBoardProfile::ToolbarSide::Right);
+        QCOMPARE(ClassBoardProfile::toolbarSideFromString("LEFT"), ClassBoardProfile::ToolbarSide::Left);
+        QCOMPARE(ClassBoardProfile::toolbarSideFromString("other"), ClassBoardProfile::ToolbarSide::Right);
+    }
+
+    void languageWidgetsRegistered()
+    {
+        QCOMPARE(ClassBoardDisciplines::favoriteDisplayName("widget:Vocabulaire"), QString("Vocabulaire"));
+        QCOMPARE(ClassBoardDisciplines::favoriteDisplayName("widget:Etiquettes"), QString("Étiquettes"));
+        QVERIFY(ClassBoardDisciplines::byId("anglais").favorites.contains("widget:Vocabulaire"));
+        QVERIFY(ClassBoardDisciplines::byId("francais").favorites.contains("widget:Etiquettes"));
+    }
 };
 
 QTEST_GUILESS_MAIN(TestClassBoardProfile)

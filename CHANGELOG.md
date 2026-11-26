@@ -3,6 +3,40 @@
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 Versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [En cours — refonte UI] — 2026-11-26
+
+Refonte complète de l'interface pour une prise en main immédiate sans surcharge,
+avec fond blanc par défaut, barre verticale à droite et outils dédiés Anglais / Français.
+
+### Ajouté
+- **Barre verticale moderne à droite** (déplaçable à gauche en 1 clic pour les gauchers)
+  regroupant 6 outils essentiels aux icônes bicolores (`Choisir`, `Écrire`, `Surligner`,
+  `Gommer`, `Texte`, `Outils`) + `Annuler / Rétablir`, laissant tout le bas du tableau libre.
+- **Bulle contextuelle flottante** à côté de l'outil actif : 5 pastilles rondes de couleurs
+  vives pour le stylo, 5 surligneurs fluo pastel pour `Surligner`, 3 épaisseurs ou
+  tailles de gomme + bouton `Tout effacer`.
+- **Tiroir « Outils pédagogiques »** (`ClassBoardToolsDrawer`) filtré automatiquement
+  selon les disciplines de l'enseignant (Anglais, Français, Classe, Tous) avec recherche rapide.
+- **Sélecteur de fonds moderne** (`ClassBoardBackgroundPopover`) à cartes vectorielles
+  (`Blanc`, `Quadrillé`, `Seyès`, `Ardoise`, `Quadr. noir`, `Seyès noir`) remplaçant
+  les anciennes icônes cornées d'OpenBoard.
+- **Bascule 1 clic Clair ↔ Ardoise sombre** dans la barre supérieure (changement en direct
+  du thème et du fond de page sans redémarrer).
+- Nouveaux widgets hors connexion pour l'Anglais et le Français :
+  - **Vocabulaire** (`Vocabulaire.wgt`) : cartes mémoire recto-verso (flashcards), mélange,
+    édition de liste `mot = traduction`, sauvegarde dans le document.
+  - **Étiquettes de mots** (`Etiquettes.wgt`) : étiquettes déplaçables et colorables
+    pour remettre une phrase en ordre ou analyser la grammaire.
+
+### Modifié
+- **Accueil de premier lancement** simplifié en 1 seul écran rapide avec tuiles bicolores
+  par discipline (langues et lettres en tête, toutes les disciplines accessibles).
+- **Mode Bureau** : barre flottante placée à droite par défaut avec icônes bicolores et
+  libellés clairs (`Tableau`, `Choisir`, `Écrire`, `Surligner`, `Gommer`, `Capture`, `Effacer`).
+- Onglets gris latéraux d'OpenBoard masqués par défaut sur le tableau (le panneau de
+  miniatures de pages reste accessible en cliquant sur le compteur `1 / 1`).
+- Palettes de stylo et surligneur par défaut modernisées dans `ClassBoard.config`.
+
 ## [0.1.0] — 2026-11-26
 
 Première version de ClassBoard, basée sur OpenBoard 1.7.7 (branche `master`).

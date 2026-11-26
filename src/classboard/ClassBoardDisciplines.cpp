@@ -39,12 +39,14 @@ namespace
     const QString Magnifier  = QStringLiteral("openboardtool://magnifier");
 
     // Applications de la bibliothèque (fonctionnent hors connexion)
-    const QString Timer      = QStringLiteral("widget:Minuteur");
-    const QString Draw       = QStringLiteral("widget:TirageAuSort");
-    const QString Stopwatch  = QStringLiteral("widget:Stopwatch");
-    const QString Calculator = QStringLiteral("widget:Calculator");
-    const QString Graph      = QStringLiteral("widget:GraphMe");
-    const QString Clock      = QStringLiteral("widget:Horloge");
+    const QString Timer       = QStringLiteral("widget:Minuteur");
+    const QString Draw        = QStringLiteral("widget:TirageAuSort");
+    const QString Vocabulaire = QStringLiteral("widget:Vocabulaire");
+    const QString Etiquettes  = QStringLiteral("widget:Etiquettes");
+    const QString Stopwatch   = QStringLiteral("widget:Stopwatch");
+    const QString Calculator  = QStringLiteral("widget:Calculator");
+    const QString Graph       = QStringLiteral("widget:GraphMe");
+    const QString Clock       = QStringLiteral("widget:Horloge");
 
     QString icon(const char* name)
     {
@@ -67,17 +69,17 @@ namespace
         };
 
         add("general", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Général / polyvalent"),
-            {Timer, Draw, Mask, Spotlight, Ruler, Magnifier});
+            {Timer, Draw, Mask, Spotlight, Vocabulaire, Etiquettes, Ruler, Magnifier});
         add("math", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Mathématiques"),
             {Ruler, Triangle, Protractor, Compass, Axes, Graph, Calculator});
         add("francais", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Français"),
-            {Mask, Spotlight, Magnifier, Timer, Draw}, true);
+            {Mask, Etiquettes, Timer, Draw, Vocabulaire, Spotlight, Magnifier}, true);
         add("histoire-geo", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Histoire-géographie / EMC"),
-            {Mask, Spotlight, Magnifier, Ruler, Timer});
+            {Mask, Spotlight, Magnifier, Timer, Draw, Ruler});
         add("anglais", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Anglais"),
-            {Timer, Draw, Mask, Spotlight});
+            {Vocabulaire, Timer, Draw, Mask, Etiquettes, Spotlight});
         add("langues", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Autres langues vivantes"),
-            {Timer, Draw, Mask, Spotlight});
+            {Vocabulaire, Timer, Draw, Mask, Etiquettes, Spotlight});
         add("physique-chimie", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Physique-chimie"),
             {Ruler, Protractor, Axes, Graph, Calculator, Stopwatch});
         add("svt", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "SVT"),
@@ -91,9 +93,9 @@ namespace
         add("eps", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "EPS"),
             {Stopwatch, Timer, Draw, Clock});
         add("segpa", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "SEGPA"),
-            {Timer, Draw, Mask, Spotlight, Magnifier, Ruler}, true);
+            {Timer, Draw, Etiquettes, Vocabulaire, Mask, Spotlight, Magnifier, Ruler}, true);
         add("ulis", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "ULIS"),
-            {Timer, Mask, Spotlight, Magnifier, Draw}, true);
+            {Timer, Etiquettes, Vocabulaire, Mask, Spotlight, Magnifier, Draw}, true);
         add("autre", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Autres disciplines"),
             {Timer, Draw, Mask, Spotlight, Ruler});
 
@@ -203,6 +205,8 @@ QString ClassBoardDisciplines::favoriteDisplayName(const QString& favorite)
         {"openboardtool://magnifier",      QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Loupe")},
         {"widget:Minuteur",                QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Minuteur")},
         {"widget:TirageAuSort",            QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Tirage au sort")},
+        {"widget:Vocabulaire",             QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Vocabulaire")},
+        {"widget:Etiquettes",              QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Étiquettes")},
         {"widget:Stopwatch",               QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Chronomètre")},
         {"widget:Calculator",              QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Calculatrice")},
         {"widget:GraphMe",                 QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Graphique")},

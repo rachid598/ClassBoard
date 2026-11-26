@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<!--
+  ClassBoard — Vocabulaire (cartes recto-verso pour les langues et le français)
+  Copyright (C) 2026 Contributeurs ClassBoard — GPL-3.0
+  Application autonome : aucune ressource réseau.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vocabulaire</title>
+<style>
+  :root {
+    --bg: #FFFFFF; --text: #181C25; --muted: #647084; --border: #E6EAF0;
+    --soft: #F4F6FB; --accent: #4F46E5; --accent-soft: #EEF2FF;
+    --back-bg: #ECFDF5; --back-accent: #059669;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: transparent; }
+  body {
+    font-family: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; color: var(--text);
+    -webkit-user-select: none; user-select: none;
+  }
+  .shell {
+    height: 100%; padding: 16px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 22px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .title { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .pill {
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+  }
+  .top-actions { display: flex; gap: 6px; }
+  .icon-btn {
+    height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .icon-btn:hover { background: var(--soft); }
+  .icon-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .stage {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    border-radius: 18px; padding: 20px; cursor: pointer; text-align: center;
+    background: var(--accent-soft); border: 2px solid transparent; transition: background 0.2s, border-color 0.2s;
+    position: relative; min-height: 140px;
+  }
+  .stage.flipped { background: var(--back-bg); border-color: #A7F3D0; }
+  .stage-badge {
+    position: absolute; top: 12px; left: 14px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent);
+  }
+  .stage.flipped .stage-badge { color: var(--back-accent); }
+  .word { font-size: 32px; font-weight: 800; line-height: 1.25; word-break: break-word; }
+  .hint { position: absolute; bottom: 10px; font-size: 12px; color: var(--muted); }
+  .controls { display: flex; gap: 8px; align-items: center; }
+  .btn {
+    height: 44px; border-radius: 14px; border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; padding: 0 14px;
+  }
+  .btn:hover { background: var(--soft); }
+  .btn.primary { flex: 1; background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+  .btn.primary:hover { background: #4338CA; }
+  .editor { display: none; flex: 1; flex-direction: column; gap: 8px; }
+  .editor.open { display: flex; }
+  textarea {
+    flex: 1; width: 100%; border: 1px solid var(--border); border-radius: 14px; padding: 12px;
+    font: inherit; font-size: 14px; line-height: 1.5; resize: none; color: var(--text); background: var(--soft);
+    -webkit-user-select: text; user-select: text;
+  }
+  .editor-note { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="top">
+    <div class="title">Vocabulaire <span class="pill" id="counter">1 / 6</span></div>
+    <div class="top-actions">
+      <button class="icon-btn" id="shuffleBtn" title="Mélanger les cartes">Mélanger</button>
+      <button class="icon-btn" id="editBtn" title="Modifier la liste de mots">Modifier</button>
+    </div>
+  </div>
+
+  <div class="stage" id="stage" title="Cliquer pour retourner la carte">
+    <span class="stage-badge" id="sideLabel">Recto · Anglais</span>
+    <div class="word" id="word">wake up</div>
+    <span class="hint">Cliquer pour retourner</span>
+  </div>
+
+  <div class="editor" id="editor">
+    <div class="editor-note">Une carte par ligne au format : <b>mot = traduction</b></div>
+    <textarea id="listInput"></textarea>
+  </div>
+
+  <div class="controls" id="navControls">
+    <button class="btn" id="prevBtn">← Préc.</button>
+    <button class="btn primary" id="flipBtn">Retourner</button>
+    <button class="btn" id="nextBtn">Suiv. →</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var DEFAULT_LIST = [
+    "wake up = se réveiller",
+    "have breakfast = prendre le petit-déjeuner",
+    "go to school = aller à l'école",
+    "underground = le métro",
+    "homework = les devoirs",
+    "always = toujours"
+  ].join("\n");
+
+  var cards = [];
+  var index = 0;
+  var flipped = false;
+  var editing = false;
+
+  var stage = document.getElementById("stage");
+  var sideLabel = document.getElementById("sideLabel");
+  var word = document.getElementById("word");
+  var counter = document.getElementById("counter");
+  var editor = document.getElementById("editor");
+  var listInput = document.getElementById("listInput");
+  var navControls = document.getElementById("navControls");
+  var editBtn = document.getElementById("editBtn");
+
+  function savePref(k, v) {
+    try { if (window.sankore && window.sankore.setPreference) window.sankore.setPreference(k, String(v)); } catch (e) {}
+  }
+
+  function loadPref(k, fallback) {
+    try {
+      if (window.sankore && window.sankore.async && window.sankore.async.preference)
+        return window.sankore.async.preference(k, String(fallback));
+      if (window.sankore && window.sankore.preference)
+        return Promise.resolve(window.sankore.preference(k, String(fallback)));
+    } catch (e) {}
+    return Promise.resolve(String(fallback));
+  }
+
+  function parseList(raw) {
+    var lines = String(raw || "").split(/\r?\n/);
+    var out = [];
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line) continue;
+      var sep = line.indexOf("=");
+      if (sep < 0) sep = line.indexOf(";");
+      if (sep >= 0) {
+        out.push({ front: line.slice(0, sep).trim(), back: line.slice(sep + 1).trim() });
+      } else {
+        out.push({ front: line, back: "…" });
+      }
+    }
+    return out.length ? out : [{ front: "Hello", back: "Bonjour" }];
+  }
+
+  function render() {
+    var c = cards[index] || { front: "", back: "" };
+    counter.textContent = (index + 1) + " / " + cards.length;
+    stage.classList.toggle("flipped", flipped);
+    sideLabel.textContent = flipped ? "Verso · Traduction" : "Recto";
+    word.textContent = flipped ? c.back : c.front;
+    stage.style.display = editing ? "none" : "flex";
+    navControls.style.display = editing ? "none" : "flex";
+    editor.classList.toggle("open", editing);
+    editBtn.classList.toggle("active", editing);
+    editBtn.textContent = editing ? "Valider" : "Modifier";
+  }
+
+  stage.addEventListener("click", function () { flipped = !flipped; render(); });
+  document.getElementById("flipBtn").addEventListener("click", function () { flipped = !flipped; render(); });
+  document.getElementById("prevBtn").addEventListener("click", function () {
+    index = (index - 1 + cards.length) % cards.length;
+    flipped = false;
+    render();
+  });
+  document.getElementById("nextBtn").addEventListener("click", function () {
+    index = (index + 1) % cards.length;
+    flipped = false;
+    render();
+  });
+  document.getElementById("shuffleBtn").addEventListener("click", function () {
+    for (var i = cards.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
+    }
+    index = 0;
+    flipped = false;
+    render();
+  });
+  editBtn.addEventListener("click", function () {
+    if (editing) {
+      cards = parseList(listInput.value);
+      savePref("cards", listInput.value);
+      index = 0;
+      flipped = false;
+      editing = false;
+    } else {
+      editing = true;
+    }
+    render();
+  });
+
+  loadPref("cards", DEFAULT_LIST).then(function (val) {
+    var text = val && val.trim() ? val : DEFAULT_LIST;
+    listInput.value = text;
+    cards = parseList(text);
+    render();
+  });
+})();
+</script>
+</body>
+</html>
