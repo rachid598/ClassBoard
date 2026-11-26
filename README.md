@@ -14,6 +14,18 @@ et des outils de classe.
 > 🇫🇷 Interface en français par défaut · hors connexion · sans compte · sans abonnement ·
 > sans télémétrie · sans droits administrateur · licence GPL-3.0
 
+<p align="center">
+  <img src="docs/images/tableau-clair.png" width="49%" alt="Tableau ClassBoard en thème clair, avec la barre de favoris et la règle">
+  <img src="docs/images/assistant-disciplines.png" width="49%" alt="Assistant de premier lancement : choix des disciplines">
+</p>
+<p align="center">
+  <img src="docs/images/minuteur.png" width="32%" alt="Widget Minuteur">
+  <img src="docs/images/tirage-au-sort.png" width="32%" alt="Widget Tirage au sort">
+  <img src="docs/images/tableau-sombre-fonds.png" width="32%" alt="Thème sombre et fonds Seyès">
+</p>
+
+*Captures réalisées sous Linux pendant le développement ; l'interface est identique sous Windows.*
+
 ## Ce que ClassBoard apporte
 
 | | |

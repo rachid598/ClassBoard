@@ -211,4 +211,30 @@ void ClassBoardIcons::applyToMainWindow(UBMainWindow* w)
     w->actionDocument->setIcon(icon("documents", Style::Toolbar));
     w->actionDesktop->setIcon(icon("desktop", Style::Toolbar));
     w->actionMenu->setIcon(icon("menu", Style::Toolbar));
+
+    // Mode Web
+    w->actionWebBack->setIcon(icon("previous", Style::Toolbar));
+    w->actionWebForward->setIcon(icon("next", Style::Toolbar));
+    w->actionWebReload->setIcon(icon("reload", Style::Toolbar));
+    w->actionStopLoading->setIcon(icon("stop", Style::Toolbar));
+    w->actionHome->setIcon(icon("home", Style::Toolbar));
+    w->actionWebBigger->setIcon(icon("zoom-in", Style::Toolbar));
+    w->actionWebSmaller->setIcon(icon("zoom-out", Style::Toolbar));
+    w->actionWebTools->setIcon(icon("tools", Style::Toolbar));
+    w->actionBookmarks->setIcon(icon("bookmark", Style::Toolbar));
+    w->actionAddBookmark->setIcon(icon("bookmark", Style::Toolbar));
+
+    // Mode Documents
+    w->actionNewFolder->setIcon(icon("new-folder", Style::Toolbar));
+    w->actionNewDocument->setIcon(icon("new-page", Style::Toolbar));
+    w->actionImport->setIcon(icon("import", Style::Toolbar));
+    w->actionExport->setIcon(icon("export", Style::Toolbar));
+    w->actionOpen->setIcon(icon("open", Style::Toolbar));
+    w->actionDuplicate->setIcon(icon("duplicate", Style::Toolbar));
+    w->actionDelete->setIcon(icon("clear-page", Style::Toolbar));
+    w->actionRename->setIcon(icon("rename", Style::Toolbar));
+    w->actionAddToWorkingDocument->setIcon(icon("add", Style::Toolbar));
+    w->actionDocumentAdd->setIcon(icon("add", Style::Toolbar));
+    w->actionDocumentTools->setIcon(icon("tools", Style::Toolbar));
+    w->actionPreferences->setIcon(icon("menu", Style::Toolbar));
 }

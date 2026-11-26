@@ -17,10 +17,13 @@
     <file>disciplines/ulis.svg</file>
     <file>icons/profile.svg</file>
     <file>icons/star-plus.svg</file>
+    <file>tools/add.svg</file>
     <file>tools/axes.svg</file>
     <file>tools/backgrounds.svg</file>
     <file>tools/board.svg</file>
+    <file>tools/bookmark.svg</file>
     <file>tools/calculator.svg</file>
+    <file>tools/capture-window.svg</file>
     <file>tools/capture.svg</file>
     <file>tools/clear-page.svg</file>
     <file>tools/clock.svg</file>
@@ -28,9 +31,13 @@
     <file>tools/desktop.svg</file>
     <file>tools/dice.svg</file>
     <file>tools/documents.svg</file>
+    <file>tools/duplicate.svg</file>
     <file>tools/eraser.svg</file>
+    <file>tools/export.svg</file>
     <file>tools/graph.svg</file>
     <file>tools/hand.svg</file>
+    <file>tools/home.svg</file>
+    <file>tools/import.svg</file>
     <file>tools/keyboard.svg</file>
     <file>tools/laser.svg</file>
     <file>tools/line.svg</file>
@@ -38,21 +45,27 @@
     <file>tools/marker.svg</file>
     <file>tools/mask.svg</file>
     <file>tools/menu.svg</file>
+    <file>tools/new-folder.svg</file>
     <file>tools/new-page.svg</file>
     <file>tools/next.svg</file>
+    <file>tools/open.svg</file>
     <file>tools/pen.svg</file>
     <file>tools/play.svg</file>
     <file>tools/previous.svg</file>
     <file>tools/protractor.svg</file>
     <file>tools/redo.svg</file>
+    <file>tools/reload.svg</file>
+    <file>tools/rename.svg</file>
     <file>tools/ruler.svg</file>
     <file>tools/selector.svg</file>
     <file>tools/snap.svg</file>
     <file>tools/spotlight.svg</file>
+    <file>tools/stop.svg</file>
     <file>tools/stopwatch.svg</file>
     <file>tools/stylus.svg</file>
     <file>tools/text.svg</file>
     <file>tools/timer.svg</file>
+    <file>tools/tools.svg</file>
     <file>tools/triangle.svg</file>
     <file>tools/undo.svg</file>
     <file>tools/web.svg</file>

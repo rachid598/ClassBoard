@@ -3,8 +3,8 @@
         xmlns:ub="http://uniboard.mnemis.com/widgets"
         id="classboard.minuteur"
         version="1.0"
-        width="360"
-        height="330"
+        width="400"
+        height="380"
         ub:resizable="true">
 
     <name>Minuteur</name>

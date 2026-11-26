@@ -26,16 +26,17 @@
   }
   .top { display: flex; align-items: center; justify-content: space-between; }
   .title { font-size: 14px; font-weight: 600; color: var(--muted); }
-  .presets { display: flex; gap: 6px; flex-wrap: wrap; }
+  .presets { display: flex; gap: 5px; }
   .chip {
-    min-width: 46px; height: 34px; padding: 0 10px; border-radius: 17px; border: 1px solid var(--border);
+    flex: 1 1 0; min-width: 0; height: 34px; padding: 0 4px; white-space: nowrap; border-radius: 17px; border: 1px solid var(--border);
     background: var(--bg); color: var(--text); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
   }
   .chip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
   .center { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; min-height: 120px; }
-  svg.ring { position: absolute; width: 100%; height: 100%; }
+  .dial { position: relative; display: flex; align-items: center; justify-content: center; }
+  svg.ring { position: absolute; inset: 0; width: 100%; height: 100%; }
   .digits {
-    font-size: clamp(40px, 22vmin, 96px); font-weight: 700; letter-spacing: -0.02em;
+    font-size: 40px; font-weight: 700; letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums; z-index: 1; cursor: pointer;
   }
   .digits.done { color: var(--warn); animation: blink 0.6s step-end infinite; }
@@ -61,13 +62,15 @@
 
   <div class="presets" role="group" aria-label="Durées prédéfinies" id="presets"></div>
 
-  <div class="center">
+  <div class="center" id="center">
+   <div class="dial" id="dial">
     <svg class="ring" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <circle cx="100" cy="100" r="88" fill="none" stroke="var(--ring)" stroke-width="10"></circle>
       <circle id="progress" cx="100" cy="100" r="88" fill="none" stroke="var(--accent)" stroke-width="10"
               stroke-linecap="round" transform="rotate(-90 100 100)"></circle>
     </svg>
     <div class="digits" id="digits" role="timer" aria-live="off" title="Cliquer pour démarrer ou mettre en pause">05:00</div>
+   </div>
   </div>
 
   <div class="controls">
@@ -82,7 +85,7 @@
 (function () {
   "use strict";
 
-  var PRESETS = [1, 2, 3, 5, 10, 15, 20];
+  var PRESETS = [1, 2, 3, 5, 10, 15];
   var CIRC = 2 * Math.PI * 88;
 
   var duration = 5 * 60;      // durée choisie (s)
@@ -125,6 +128,7 @@
 
   function render() {
     digits.textContent = format(remaining);
+    if (typeof layout === "function") layout();
     var ratio = duration > 0 ? remaining / duration : 0;
     progress.setAttribute("stroke-dashoffset", (CIRC * (1 - ratio)).toFixed(1));
     progress.setAttribute("stroke", remaining <= 10 && remaining > 0 ? "var(--warn)" : "var(--accent)");
@@ -226,7 +230,19 @@
     setDuration(isNaN(v) ? 300 : v);
   });
 
+  // Le cadran s'adapte à la taille du widget (redimensionnable sur le tableau)
+  function layout() {
+    var box = document.getElementById("center");
+    var size = Math.max(90, Math.min(box.clientWidth, box.clientHeight));
+    var dial = document.getElementById("dial");
+    dial.style.width = size + "px";
+    dial.style.height = size + "px";
+    digits.style.fontSize = Math.round(size * (remaining >= 3600 ? 0.2 : 0.27)) + "px";
+  }
+  window.addEventListener("resize", layout);
+
   render();
+  layout();
 })();
 </script>
 </body>
