@@ -113,6 +113,14 @@ void ClassBoardFavoritesPalette::reload()
     connect(edit, &QAction::triggered, this, &ClassBoardFavoritesPalette::editRequested);
     addAction(edit);
 
+    // Les boutons ajoutés à une barre déjà visible ne s'affichent qu'au prochain
+    // tour de boucle : on les montre tout de suite pour calculer la bonne taille.
+    for (UBActionPaletteButton* button : mButtons)
+        button->show();
+
+    if (layout())
+        layout()->activate();
+
     adjustSize();
 }
 

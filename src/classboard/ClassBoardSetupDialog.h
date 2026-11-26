@@ -76,6 +76,7 @@ private:
     QStringList selectedDisciplines() const;
     void loadFromProfile();
     void fillFavorites(const QStringList& favorites);
+    void refreshFavoritesIfUntouched();
     QStringList checkedFavorites() const;
     void save();
 
@@ -100,6 +101,8 @@ private:
     QCheckBox* mShowFavoritesBar = nullptr;
 
     QListWidget* mFavorites = nullptr;
+    bool mFavoritesTouched = false;   // l'enseignant a modifié la liste des favoris
+    bool mFillingFavorites = false;
 
     QPushButton* mSkipButton = nullptr;
     QPushButton* mBackButton = nullptr;

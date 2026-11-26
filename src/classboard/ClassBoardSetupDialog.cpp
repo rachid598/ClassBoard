@@ -205,6 +205,8 @@ QWidget* ClassBoardSetupDialog::buildHeader()
 
         mNavGroup->button(0)->setChecked(true);
         connect(mNavGroup, &QButtonGroup::idClicked, this, [this](int id) {
+            if (id == FavoritesPage)
+                refreshFavoritesIfUntouched();
             mPages->setCurrentIndex(id);
             updateState();
         });
@@ -366,6 +368,14 @@ QWidget* ClassBoardSetupDialog::buildFavoritesPage()
     mFavorites->setSelectionMode(QAbstractItemView::SingleSelection);
     layout->addWidget(mFavorites, 1);
 
+    connect(mFavorites, &QListWidget::itemChanged, this, [this]() {
+        if (!mFillingFavorites)
+            mFavoritesTouched = true;
+    });
+    connect(mFavorites->model(), &QAbstractItemModel::rowsMoved, this, [this]() {
+        mFavoritesTouched = true;
+    });
+
     QHBoxLayout* row = new QHBoxLayout();
     QPushButton* restore = new QPushButton(tr("Revenir aux favoris de mes disciplines"), page);
     connect(restore, &QPushButton::clicked, this, &ClassBoardSetupDialog::restoreDisciplineFavorites);
@@ -483,8 +493,18 @@ void ClassBoardSetupDialog::loadFromProfile()
     fillFavorites(ClassBoardProfile::effectiveFavorites());
 }
 
+void ClassBoardSetupDialog::refreshFavoritesIfUntouched()
+{
+    if (mFavoritesTouched)
+        return;
+
+    const QStringList custom = ClassBoardProfile::customFavorites();
+    fillFavorites(custom.isEmpty() ? ClassBoardDisciplines::favoritesFor(selectedDisciplines()) : custom);
+}
+
 void ClassBoardSetupDialog::fillFavorites(const QStringList& favorites)
 {
+    mFillingFavorites = true;
     mFavorites->clear();
 
     QStringList ordered = favorites;
@@ -501,6 +521,8 @@ void ClassBoardSetupDialog::fillFavorites(const QStringList& favorites)
         item->setFlags(item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled);
         item->setCheckState(favorites.contains(f) ? Qt::Checked : Qt::Unchecked);
     }
+
+    mFillingFavorites = false;
 }
 
 QStringList ClassBoardSetupDialog::checkedFavorites() const
@@ -521,6 +543,7 @@ QStringList ClassBoardSetupDialog::checkedFavorites() const
 void ClassBoardSetupDialog::restoreDisciplineFavorites()
 {
     fillFavorites(ClassBoardDisciplines::favoritesFor(selectedDisciplines()));
+    mFavoritesTouched = true;
 }
 
 void ClassBoardSetupDialog::save()
@@ -542,11 +565,15 @@ void ClassBoardSetupDialog::save()
     ClassBoardProfile::setShowToolLabels(mShowLabels->isChecked());
     ClassBoardProfile::setShowFavoritesBar(mShowFavoritesBar->isChecked());
 
-    // Favoris : on ne mémorise une liste personnalisée que si elle diffère
-    // de celle proposée par les disciplines (pour suivre les changements).
-    const QStringList favorites = checkedFavorites();
-    const QStringList defaults = ClassBoardDisciplines::favoritesFor(selectedDisciplines());
-    ClassBoardProfile::setCustomFavorites(favorites == defaults ? QStringList() : favorites);
+    // Favoris : une liste personnalisée n'est mémorisée que si l'enseignant a
+    // modifié la liste ET qu'elle diffère de celle proposée par ses disciplines.
+    // Sinon les favoris continuent de suivre les disciplines.
+    if (mFavoritesTouched)
+    {
+        const QStringList favorites = checkedFavorites();
+        const QStringList defaults = ClassBoardDisciplines::favoritesFor(selectedDisciplines());
+        ClassBoardProfile::setCustomFavorites(favorites == defaults ? QStringList() : favorites);
+    }
 
     mRestartRequired = oldScale != ClassBoardProfile::toolbarScale()
                     || oldTheme != ClassBoardProfile::theme()
@@ -596,7 +623,7 @@ void ClassBoardSetupDialog::goNext()
     if (page == DisciplinesPage)
     {
         // Les favoris proposés suivent les disciplines choisies
-        fillFavorites(ClassBoardDisciplines::favoritesFor(selectedDisciplines()));
+        refreshFavoritesIfUntouched();
     }
 
     if (page < PageCount - 1)
@@ -653,6 +680,7 @@ void ClassBoardSetupDialog::resetProfile()
 
     ClassBoardProfile::reset();
     ClassBoardProfile::setFirstRunCompleted(true);
+    mFavoritesTouched = false;
     loadFromProfile();
     updateState();
 }
