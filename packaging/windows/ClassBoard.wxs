@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Paquet MSI de ClassBoard (WiX Toolset 5), destiné au déploiement silencieux
+  (Kwartz, GPO, SCCM...). Installation pour toute la machine dans
+  C:\Program Files\ClassBoard.
+
+  Compilation (faite par la CI) :
+    wix build packaging\windows\ClassBoard.wxs -arch x64 -d Version=0.1.0
+        -d AppExe=ClassBoard.exe -bindpath dist=<dist\ClassBoard>
+        -o ClassBoard-Setup-x64.msi
+
+  Installation silencieuse   : msiexec /i ClassBoard-Setup-x64.msi /qn /norestart
+  Désinstallation silencieuse : msiexec /x ClassBoard-Setup-x64.msi /qn /norestart
+                                (ou msiexec /x {code produit} /qn)
+  Journal d'installation      : ajouter  /l*v "%TEMP%\classboard-msi.log"
+  Sans raccourci bureau       : msiexec /i ClassBoard-Setup-x64.msi /qn DESKTOPSHORTCUT=0
+-->
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="ClassBoard"
+           Manufacturer="Contributeurs ClassBoard"
+           Version="$(Version)"
+           UpgradeCode="25D3B2E8-1438-4728-BEEA-509F99A48445"
+           Scope="perMachine"
+           Language="1036"
+           Codepage="1252"
+           Compressed="yes">
+
+    <SummaryInformation Description="ClassBoard — tableau blanc interactif libre (GPL-3.0)" />
+
+    <MajorUpgrade DowngradeErrorMessage="Une version plus récente de ClassBoard est déjà installée." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="ClassBoardIcon" SourceFile="..\..\resources\win\ClassBoard.ico" />
+    <Property Id="ARPPRODUCTICON" Value="ClassBoardIcon" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/rachid598/ClassBoard" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="DESKTOPSHORTCUT" Value="1" />
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="ClassBoard" />
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="ClassBoard" Level="1">
+      <Files Directory="INSTALLFOLDER" Include="!(bindpath.dist)\**" />
+
+      <Component Id="StartMenuShortcut" Directory="ProgramMenuFolder" Guid="4E1F5C2A-7B3D-4C8E-9A61-2F0D3B7C5E91">
+        <Shortcut Id="StartMenuShortcut" Name="ClassBoard" Description="Tableau blanc interactif"
+                  Target="[INSTALLFOLDER]$(AppExe)" WorkingDirectory="INSTALLFOLDER" Icon="ClassBoardIcon" />
+        <RegistryValue Root="HKLM" Key="Software\ClassBoard" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <Component Id="DesktopShortcut" Directory="DesktopFolder" Guid="8B2C6D1E-3F4A-4B5C-8D7E-1A2B3C4D5E6F" Condition="DESKTOPSHORTCUT = 1">
+        <Shortcut Id="DesktopShortcut" Name="ClassBoard" Description="Tableau blanc interactif"
+                  Target="[INSTALLFOLDER]$(AppExe)" WorkingDirectory="INSTALLFOLDER" Icon="ClassBoardIcon" />
+        <RegistryValue Root="HKLM" Key="Software\ClassBoard" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+
+      <Component Id="UbzAssociation" Directory="INSTALLFOLDER" Guid="C7D8E9F0-1A2B-4C3D-8E5F-6A7B8C9D0E1F">
+        <RegistryValue Root="HKLM" Key="Software\Classes\.ubz" Value="ClassBoard.Document" Type="string" KeyPath="yes" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\ClassBoard.Document" Value="Document ClassBoard / OpenBoard" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\ClassBoard.Document\DefaultIcon" Value="[INSTALLFOLDER]$(AppExe),1" Type="string" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\ClassBoard.Document\shell\open\command" Value="&quot;[INSTALLFOLDER]$(AppExe)&quot; &quot;%1&quot;" Type="string" />
+      </Component>
+    </Feature>
+  </Package>
+</Wix>

@@ -1,0 +1,184 @@
+# Compilation et empaquetage de ClassBoard.
+#
+# - À chaque push / pull request : compilation Linux (contrôle rapide + tests)
+#   et compilation Windows x64 complète avec installateurs en artefacts.
+# - À chaque tag "v*" (ex. v0.1.0) : création automatique d'une GitHub Release
+#   contenant les installateurs et SHA256SUMS.txt.
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+    paths-ignore: ["**.md", "docs/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+env:
+  QT_VERSION: "6.8.3"
+  # Bibliothèques Windows précompilées d'OpenBoard (poppler, OpenSSL, zlib, QuaZip)
+  THIRDPARTY_REPO: OpenBoard-org/OpenBoard-ThirdParty
+  THIRDPARTY_REF: 85a0ce6cc7660ea5b439d936c8fe8667580cbbb2
+
+jobs:
+  # -------------------------------------------------------------------------
+  linux:
+    name: Linux (contrôle + tests)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dépendances
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            cmake ninja-build ccache pkg-config g++ \
+            qt6-base-dev qt6-base-dev-tools qt6-webengine-dev qt6-webengine-dev-tools \
+            qt6-multimedia-dev qt6-svg-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools \
+            qt6-5compat-dev libqt6svgwidgets6 libqt6opengl6-dev \
+            libpoppler-dev libpoppler-cpp-dev libpoppler-private-dev libquazip1-qt6-dev \
+            libssl-dev zlib1g-dev libavcodec-dev libavformat-dev libavutil-dev \
+            libswresample-dev libswscale-dev libx11-dev libpaper-dev xvfb xauth
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ccache
+          key: ccache-linux-${{ github.sha }}
+          restore-keys: ccache-linux-
+
+      - name: Configuration
+        run: >
+          cmake -S . -B build -G Ninja -DQT_VERSION=6 -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_INSTALL_PREFIX=/opt
+          -DCLASSBOARD_BUILD_TESTS=ON
+
+      - name: Compilation
+        run: cmake --build build -j4
+
+      - name: Tests
+        run: |
+          if [ -f build/CTestTestfile.cmake ]; then
+            QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure
+          else
+            echo "Aucun test configuré"
+          fi
+
+  # -------------------------------------------------------------------------
+  windows:
+    name: Windows x64 (Release + installateurs)
+    runs-on: windows-2022
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: ClassBoard
+
+      - name: Bibliothèques tierces (OpenBoard-ThirdParty)
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.THIRDPARTY_REPO }}
+          ref: ${{ env.THIRDPARTY_REF }}
+          path: OpenBoard-ThirdParty
+
+      - name: Qt ${{ env.QT_VERSION }} (MSVC 2022 x64)
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ env.QT_VERSION }}
+          host: windows
+          target: desktop
+          arch: win64_msvc2022_64
+          modules: qtwebengine qtwebchannel qtpositioning qtmultimedia qt5compat qtimageformats qtactiveqt
+          tools: tools_jom
+          cache: true
+
+      - name: Environnement MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Version
+        id: version
+        run: |
+          if ("${{ github.ref_type }}" -eq "tag") {
+            $v = "${{ github.ref_name }}" -replace '^v', ''
+          } else {
+            $t = Get-Content ClassBoard/version.txt
+            $maj = ($t | Select-String 'VERSION_MAJ\s*=\s*(\d+)').Matches[0].Groups[1].Value
+            $min = ($t | Select-String 'VERSION_MIN\s*=\s*(\d+)').Matches[0].Groups[1].Value
+            $pat = ($t | Select-String 'VERSION_PATCH\s*=\s*(\d+)').Matches[0].Groups[1].Value
+            $v = "$maj.$min.$pat"
+          }
+          "value=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "Version : $v"
+
+      - name: jom dans le PATH
+        run: |
+          $jom = Get-ChildItem "$env:IQTA_TOOLS" -Recurse -Filter jom.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($jom) { $jom.DirectoryName >> $env:GITHUB_PATH; Write-Host "jom : $($jom.FullName)" } else { Write-Host "jom absent : nmake sera utilisé" }
+
+      - name: Compilation (Release x64)
+        run: ./ClassBoard/scripts/windows/build.ps1 -ThirdPartyDir OpenBoard-ThirdParty
+
+      - name: Assemblage (DLL + ressources)
+        run: ./ClassBoard/scripts/windows/deploy.ps1 -ThirdPartyDir OpenBoard-ThirdParty -Dist dist/ClassBoard
+
+      - name: Test de démarrage
+        run: ./ClassBoard/scripts/windows/smoke-test.ps1 -Dist dist/ClassBoard
+
+      - name: Outils d'empaquetage (WiX 5, Inno Setup)
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+
+      - name: Empaquetage (.exe, .msi, .zip, SHA256)
+        run: ./ClassBoard/scripts/windows/package.ps1 -Version "${{ steps.version.outputs.value }}" -Dist dist/ClassBoard -OutDir dist/out
+
+      - name: Artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClassBoard-${{ steps.version.outputs.value }}-windows-x64
+          path: |
+            dist/out/ClassBoard-Setup-x64.exe
+            dist/out/ClassBoard-Setup-x64.msi
+            dist/out/ClassBoard-Portable-x64.zip
+            dist/out/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  # -------------------------------------------------------------------------
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [linux, windows]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Publication
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ClassBoard ${{ github.ref_name }}
+          body_path: packaging/release-notes.md
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            artifacts/ClassBoard-Setup-x64.exe
+            artifacts/ClassBoard-Setup-x64.msi
+            artifacts/ClassBoard-Portable-x64.zip
+            artifacts/SHA256SUMS.txt
