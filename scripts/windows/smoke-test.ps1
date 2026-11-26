@@ -5,13 +5,16 @@
 
 .DESCRIPTION
     Le processus doit rester vivant <Seconds> secondes, puis il est arrêté.
-    Les réglages sont isolés dans un dossier temporaire (APPDATA/LOCALAPPDATA)
-    pour ne pas dépendre de l'état de la machine.
+    Prévu pour la CI (machine éphémère) : avec -ProfileFile, le profil fourni est
+    copié dans %APPDATA%\ClassBoard (Qt lit l'emplacement réel du dossier, pas la
+    variable d'environnement), puis supprimé après le test.
 #>
 param(
     [string]$Dist = (Join-Path $PSScriptRoot "..\..\dist\ClassBoard"),
     [int]$Seconds = 25,
-    [string]$AppExe = $env:APP_EXE
+    [string]$AppExe = $env:APP_EXE,
+    # Profil ClassBoard à injecter (fichier INI) pour tester une configuration particulière
+    [string]$ProfileFile = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,16 +24,20 @@ if (-not $AppExe) {
 }
 $exePath = Join-Path $Dist $AppExe
 
-$sandbox = Join-Path $env:RUNNER_TEMP "classboard-smoke"
-if (-not $env:RUNNER_TEMP) { $sandbox = Join-Path $env:TEMP "classboard-smoke" }
-New-Item -ItemType Directory -Force $sandbox | Out-Null
+$profileDir = Join-Path ([Environment]::GetFolderPath("ApplicationData")) "ClassBoard"
+$profileTarget = Join-Path $profileDir "ClassBoardProfile.ini"
+if (Test-Path $profileTarget) { Remove-Item -Force $profileTarget }
+
+if ($ProfileFile) {
+    New-Item -ItemType Directory -Force $profileDir | Out-Null
+    Copy-Item $ProfileFile $profileTarget
+    Write-Host "Profil injecté : $ProfileFile -> $profileTarget"
+}
 
 $psi = New-Object System.Diagnostics.ProcessStartInfo
 $psi.FileName = $exePath
 $psi.WorkingDirectory = $Dist
 $psi.UseShellExecute = $false
-$psi.EnvironmentVariables["APPDATA"] = (Join-Path $sandbox "Roaming")
-$psi.EnvironmentVariables["LOCALAPPDATA"] = (Join-Path $sandbox "Local")
 $psi.EnvironmentVariables["CLASSBOARD_SKIP_FIRST_RUN"] = "1"
 $psi.EnvironmentVariables["QT_LOGGING_RULES"] = "*.debug=false"
 
@@ -43,3 +50,9 @@ if ($exited) {
 Write-Host "OK : ClassBoard tourne depuis $Seconds s (PID $($p.Id), mémoire $([int]($p.WorkingSet64 / 1MB)) Mo)"
 Stop-Process -Id $p.Id -Force
 Get-Process -Name "QtWebEngineProcess" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+# ClassBoard n'accepte qu'une instance : attendre l'arrêt complet avant un autre test
+$baseName = [IO.Path]::GetFileNameWithoutExtension($AppExe)
+for ($i = 0; $i -lt 20 -and (Get-Process -Name $baseName, "QtWebEngineProcess" -ErrorAction SilentlyContinue); $i++) {
+    Start-Sleep -Milliseconds 500
+}
+if (Test-Path $profileTarget) { Remove-Item -Force $profileTarget -ErrorAction SilentlyContinue }

@@ -65,12 +65,29 @@ jobs:
         run: cmake --build build -j4
 
       - name: Tests
+        run: QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure
+
+      - name: Test de démarrage (Xvfb)
         run: |
-          if [ -f build/CTestTestfile.cmake ]; then
-            QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure
-          else
-            echo "Aucun test configuré"
-          fi
+          sudo cmake --install build > /dev/null
+          for profile in "" tests/profiles/sombre-sans-libelles.ini; do
+            home=$(mktemp -d)
+            if [ -n "$profile" ]; then
+              mkdir -p "$home/.local/share/ClassBoard"
+              cp "$profile" "$home/.local/share/ClassBoard/ClassBoardProfile.ini"
+            fi
+            # timeout renvoie 124 s'il a dû arrêter ClassBoard : l'application tournait encore
+            HOME="$home" CLASSBOARD_SKIP_FIRST_RUN=1 QTWEBENGINE_CHROMIUM_FLAGS=--no-sandbox \
+              xvfb-run -a -s "-screen 0 1600x900x24" \
+              sh -c 'timeout 25 /usr/bin/classboard > smoke.log 2>&1; echo $? > smoke.code' || true
+            code=$(cat smoke.code)
+            if [ "$code" != "124" ]; then
+              echo "::error::ClassBoard s'est arrêté (code $code) avec le profil '${profile:-défaut}'"
+              tail -40 smoke.log
+              exit 1
+            fi
+            echo "OK : ClassBoard démarre avec le profil '${profile:-défaut}'"
+          done
 
   # -------------------------------------------------------------------------
   windows:
@@ -134,7 +151,9 @@ jobs:
         run: ./ClassBoard/scripts/windows/deploy.ps1 -ThirdPartyDir OpenBoard-ThirdParty -Dist dist/ClassBoard
 
       - name: Test de démarrage
-        run: ./ClassBoard/scripts/windows/smoke-test.ps1 -Dist dist/ClassBoard
+        run: |
+          ./ClassBoard/scripts/windows/smoke-test.ps1 -Dist dist/ClassBoard
+          ./ClassBoard/scripts/windows/smoke-test.ps1 -Dist dist/ClassBoard -ProfileFile ClassBoard/tests/profiles/sombre-sans-libelles.ini
 
       - name: Outils d'empaquetage (WiX 5, Inno Setup)
         run: |

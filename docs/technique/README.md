@@ -84,7 +84,8 @@ Captures d'écran sans écran : `Xvfb :99 &` puis `DISPLAY=:99 classboard` et `i
 |---|---|
 | `classboard_profile` (`tests/tst_classboardprofile.cpp`) | Catalogue des disciplines, fusion des favoris, persistance du profil, thème, bornes, réinitialisation, mode portable |
 | `classboard_widgets` (`tests/check_widgets.cmake`) | Présence et validité de `config.xml`/`index.html`/`icon.png`, absence de ressource réseau |
-| Test de démarrage Windows (`smoke-test.ps1`) | L'exécutable empaqueté démarre et reste actif |
+| Test de démarrage Windows (`smoke-test.ps1`) | L'exécutable empaqueté démarre et reste actif 25 s, avec le profil par défaut puis avec `tests/profiles/sombre-sans-libelles.ini` |
+| Test de démarrage Linux (Xvfb, job `linux`) | Mêmes deux profils, sous Xvfb |
 
 ## 5. Le module `src/classboard`
 
