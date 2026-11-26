@@ -25,7 +25,7 @@ Document de passation destiné à un développeur ou une IA qui reprend le proje
 | Pas de requête réseau de mise à jour | ✅ | `ClassBoard.config`, `UBApplicationController::checkUpdate` |
 | Profil enseignant + 15 disciplines | ✅ testé | `src/classboard/ClassBoardProfile*`, `ClassBoardDisciplines*` |
 | Assistant de premier lancement + « Mon profil » | ✅ vérifié visuellement (Linux) | `ClassBoardSetupDialog*` |
-| Barre de favoris | ✅ vérifié (Linux) | `ClassBoardFavoritesPalette*`, `UBBoardPaletteManager` |
+| Barre de favoris | ✅ vérifié (Linux), mise à jour en direct après « Mon profil » | `ClassBoardFavoritesPalette*`, `UBBoardPaletteManager` |
 | Thème clair/sombre, icônes, libellés, taille des boutons | ✅ vérifié (Linux) | `ClassBoardTheme*`, `ClassBoardIcons*`, `resources/etc/ClassBoard*.css` |
 | Minuteur, Tirage au sort | ✅ vérifié (Linux, tirage testé) | `resources/library/applications/*.wgt` |
 | Seyès, polices Marelle/Écolier | ✅ | `ClassBoard.config`, `resources/customizations/fonts` |
@@ -34,8 +34,8 @@ Document de passation destiné à un développeur ou une IA qui reprend le proje
 | CI Windows (exe/msi/zip/SHA256) | voir §4 | `scripts/windows/*`, `packaging/windows/*` |
 | Documentation | ✅ | `README.md`, `docs/`, `ARCHITECTURE.md`, `ROADMAP.md`… |
 
-Captures et maquettes : maquette de design publiée en Artifact (claude.ai), captures
-d'écran Linux prises sous Xvfb pendant le développement (non versionnées).
+Captures : `docs/images/` (prises sous Linux/Xvfb). Maquette de design initiale publiée en
+Artifact claude.ai (privé, propriétaire du dépôt).
 
 ## 3. Ce qui n'a PAS été vérifié
 
@@ -48,12 +48,20 @@ d'écran Linux prises sous Xvfb pendant le développement (non versionnées).
 
 Workflow `Build` (`.github/workflows/build.yml`) : https://github.com/rachid598/ClassBoard/actions
 
-Historique des corrections déjà faites :
+- **Première exécution Windows entièrement verte : run n°3** (commit `2e0aebc`, 26/11/2026) :
+  Qt 6.8.3 ✓, compilation Release x64 (~7 min avec jom) ✓, assemblage ✓,
+  **test de démarrage ✓** (ClassBoard.exe actif 25 s sur le runner Windows),
+  Inno Setup ✓, WiX 5 ✓, zip ✓, SHA256 ✓, artefact ✓ (≈ 524 Mo pour les 3 paquets).
+- Job Linux du même run : compilation ✓ ; test `classboard_widgets` en échec **attendu**
+  (widgets poussés au commit suivant). Les runs suivants doivent être entièrement verts.
+- Les exécutions s'enchaînent sans annulation (`cancel-in-progress: false`), mais GitHub
+  ne garde qu'une exécution en attente : un nouveau push remplace celle qui attend.
+- Les modifications de `*.md` et `docs/**` seules ne déclenchent pas la CI.
+
+Corrections déjà faites :
 1. `tools: tools_jom` d'install-qt-action ne fonctionne plus (aqt ne trouve pas l'outil) →
    `jom` installé par Chocolatey.
 2. Le test `classboard_widgets` échouait tant que les widgets n'étaient pas poussés (normal).
-
-→ Consulter la dernière exécution pour l'état courant ; mettre à jour cette section.
 
 ## 5. Pièges connus
 
