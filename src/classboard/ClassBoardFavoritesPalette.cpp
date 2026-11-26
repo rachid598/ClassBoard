@@ -126,7 +126,18 @@ void ClassBoardFavoritesPalette::reload()
 
 void ClassBoardFavoritesPalette::placeInContainer(const QRect& area)
 {
+    // Petit écran : on réduit les boutons pour que la barre tienne dans la zone libre
+    QSize iconSize = ClassBoardTheme::scaledIconSize(36);
+    setButtonIconSize(iconSize);
     adjustSize();
+
+    while (height() > area.height() && iconSize.height() > 24)
+    {
+        iconSize -= QSize(4, 4);
+        setButtonIconSize(iconSize);
+        adjustSize();
+    }
+
     const int x = area.left() + 34;   // laisse visible l'onglet du panneau des pages
     const int y = area.top() + qMax(0, (area.height() - height()) / 2);
     move(x, y);

@@ -538,11 +538,12 @@ void UBBoardPaletteManager::containerResized()
         mStylusPalette->initPosition();
     }
 
-    if (mFavoritesPalette)
-        mFavoritesPalette->placeInContainer(QRect(userLeft, userTop, userWidth, userHeight));
-
     if (mBoardChrome)
         mBoardChrome->place(mContainer->rect());
+
+    if (mFavoritesPalette)
+        mFavoritesPalette->placeInContainer(mBoardChrome ? mBoardChrome->leftFreeArea()
+                                                         : QRect(userLeft, userTop, userWidth, userHeight));
 
     if(mZoomPalette)
     {

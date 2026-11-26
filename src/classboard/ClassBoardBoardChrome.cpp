@@ -372,6 +372,13 @@ void ClassBoardBoardChrome::place(const QRect& area)
     raiseAll();
 }
 
+QRect ClassBoardBoardChrome::leftFreeArea() const
+{
+    const int top = mArea.top() + TopReservedHeight;
+    const int bottom = mZoomBar->isVisible() ? mZoomBar->y() - 8 : mArea.bottom();
+    return QRect(mArea.left(), top, mArea.width(), qMax(0, bottom - top));
+}
+
 void ClassBoardBoardChrome::setVisible(bool visible)
 {
     mVisible = visible;

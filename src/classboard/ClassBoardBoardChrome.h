@@ -64,6 +64,10 @@ public:
 
     void setVisible(bool visible);
 
+    /// Zone libre à gauche du tableau, entre les barres du haut et la barre de zoom
+    /// (utilisée pour placer la barre de favoris).
+    QRect leftFreeArea() const;
+
 public slots:
     void refreshDocumentInfo();
     void markSaved();
