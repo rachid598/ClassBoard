@@ -3,7 +3,38 @@
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 Versions selon [SemVer](https://semver.org/lang/fr/).
 
-## [En cours — refonte UI] — 2026-11-26
+## [0.2.1] — 2026-11-27
+
+Nouvelle identité visuelle (logo 2026) et ajouts issus des premiers tests terrain :
+Annuler en mode Bureau, zoom permanent et redimensionnement en mode Documents,
+lecteur audio pédagogique hors connexion, export PDF en 1 clic, renommage rapide,
+formes rapides et choix du dossier de sauvegarde Kwartz.
+
+### Ajouté
+- **Nouveau logo ClassBoard 2026** (`classboard.svg`, PNG 256/1024 px et `ClassBoard.ico`
+  multi-tailles pour Windows) : monogramme « C » sur fond dégradé indigo-violet avec stylet
+  doré et trait lumineux.
+- **Mode Bureau — Annuler + bandeau d'état** : bouton **Annuler** dans la barre flottante
+  du bureau (`Ctrl+Z` également actif) permettant d'effacer le dernier tracé d'annotation
+  sans toucher au tableau, accompagné d'un bandeau discret en haut de l'écran indiquant
+  que l'annotation est active (masqué dès le passage en mode « Choisir »).
+- **Zoom et déplacement toujours visibles sur le tableau** : barre flottante en bas à gauche
+  (`−`, `100 %`, `+`, `Ajuster` et bouton `Main` pour déplacer la page) accessible en permanence.
+- **Mode Documents — boutons tactiles `−` / `+`** : ajoutés de part et d'autre du curseur
+  de zoom des vignettes pour redimensionner confortablement au doigt ou au stylet.
+- **Renommage du cours en 1 clic** : clic direct sur le titre du document en haut à gauche
+  (et entrée « Renommer ce cours… » dans le menu principal).
+- **Export PDF en 1 clic (Pronote / ENT)** : accessible depuis le menu principal et le tiroir
+  « Outils pédagogiques » sans passer par le mode Documents.
+- **Widget Lecteur audio hors connexion** (`LecteurAudio.wgt`, Anglais / Langues / Musique) :
+  ouverture d'un fichier audio local (MP3, WAV, OGG…), `−5 s`, `+5 s`, vitesses `0,75× / 0,9× / 1× / 1,25×`,
+  et **boucle A-B** pour réécouter un passage en classe.
+- **Formes rapides dans le tiroir Outils** : `Flèche`, `Encadré` et `Cercle` insérés directement
+  sur la page courante.
+- **Dossier de sauvegarde des cours (Kwartz / clé USB)** : réglable dans « Mes matières et
+  préférences › Apparence & barre » (`Storage/DocumentsDirectory`).
+
+## [0.2.0] — 2026-11-26
 
 Refonte complète de l'interface pour une prise en main immédiate sans surcharge,
 avec fond blanc par défaut, barre verticale à droite et outils dédiés Anglais / Français.

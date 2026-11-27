@@ -1,7 +1,7 @@
 # HANDOVER — reprendre le développement de ClassBoard
 
 Document de passation destiné à un développeur ou une IA qui reprend le projet.
-**À tenir à jour à chaque étape importante.** Dernière mise à jour : 2026-11-26.
+**À tenir à jour à chaque étape importante.** Dernière mise à jour : 2026-11-27.
 
 ## 1. Le projet en une minute
 
@@ -11,28 +11,29 @@ Document de passation destiné à un développeur ou une IA qui reprend le proje
   remote `upstream` = https://github.com/OpenBoard-org/OpenBoard).
 - **Dépôt** : https://github.com/rachid598/ClassBoard (privé). Branche de travail :
   `claude/gifted-turing-1gc7gi` (c'est aussi, à ce jour, la seule branche du dépôt).
-- **Langage** : C++17 / Qt 6 (8.3 sous Windows, 6.4 sous Ubuntu 24.04). Pas de Rust (voir ARCHITECTURE.md).
+- **Langage** : C++17 / Qt 6 (6.8.3 sous Windows, 6.4 sous Ubuntu 24.04). Pas de Rust (voir ARCHITECTURE.md).
 - **Contraintes** : hors connexion, sans compte, sans télémétrie, RGPD, sans droits
   administrateur, GPL-3.0, interface française par défaut.
 
-## 2. Ce qui est fait (v0.1.0)
+## 2. Ce qui est fait (v0.2.1)
 
 | Domaine | État | Où |
 |---|---|---|
 | Import OpenBoard + historique | ✅ | — |
-| Renommage ClassBoard (exe, icône, réglages séparés, RC Windows, À propos) | ✅ | `UBApplication.cpp`, `resources/win/`, `UBPreferencesController.cpp` |
+| Renommage ClassBoard + nouveau logo 2026 (SVG/PNG/ICO multi-tailles) | ✅ | `resources/classboard/classboard.svg`, `resources/win/ClassBoard.ico`, `UBApplication.cpp` |
 | Français par défaut | ✅ | `UBApplication::setupTranslators` |
 | Pas de requête réseau de mise à jour | ✅ | `ClassBoard.config`, `UBApplicationController::checkUpdate` |
-| Profil enseignant + 15 disciplines + côté de la barre (Droite/Gauche) | ✅ testé | `src/classboard/ClassBoardProfile*`, `ClassBoardDisciplines*` |
+| Profil enseignant + 15 disciplines + côté de la barre + dossier documents Kwartz | ✅ testé | `src/classboard/ClassBoardProfile*`, `ClassBoardDisciplines*`, `UBSettings.cpp` |
 | Accueil 1 écran (tuiles bicolores) + « Mes matières et préférences » (live) | ✅ vérifié visuellement (Linux/Xvfb) | `ClassBoardSetupDialog*` |
-| Barre verticale moderne à droite (6 outils + bulle couleurs/surligneurs) | ✅ vérifié visuellement (Linux/Xvfb, clair et ardoise) | `ClassBoardBoardChrome*` |
-| Tiroir « Outils pédagogiques » filtré par discipline + Sélecteur de fonds moderne | ✅ vérifié visuellement (Linux/Xvfb) | `ClassBoardToolsDrawer*`, `ClassBoardBackgroundPopover*` |
+| Barre verticale moderne à droite + zoom/Main permanents + renommage & export PDF 1-clic | ✅ vérifié visuellement (Linux/Xvfb, clair et ardoise) | `ClassBoardBoardChrome*` |
+| Mode Bureau : barre à droite + Annuler (`Ctrl+Z`) + bandeau orange d'annotation | ✅ vérifié (Linux build + code) | `UBDesktopPalette*`, `UBDesktopAnnotationController*` |
+| Mode Documents : boutons tactiles `−` / `+` autour du zoom des vignettes | ✅ vérifié visuellement (Linux/Xvfb) | `src/document/UBDocumentController.cpp` |
+| Tiroir « Outils pédagogiques » (disciplines + formes rapides + export PDF) + Sélecteur de fonds | ✅ vérifié visuellement (Linux/Xvfb) | `ClassBoardToolsDrawer*`, `ClassBoardBackgroundPopover*` |
 | Thème clair (blanc défaut) / ardoise sombre 1-clic, icônes bicolores | ✅ vérifié (Linux) | `ClassBoardTheme*`, `ClassBoardIcons*`, `resources/etc/ClassBoard*.css` |
-| Minuteur, Tirage au sort, Vocabulaire (flashcards), Étiquettes de mots | ✅ vérifié (Linux, CTest widgets hors connexion OK) | `resources/library/applications/*.wgt` |
+| 5 widgets hors connexion : Minuteur, Tirage au sort, Vocabulaire, Étiquettes, **Lecteur audio** (vitesse + boucle A-B) | ✅ vérifié (Linux, CTest widgets hors connexion OK) | `resources/library/applications/*.wgt` |
 | Seyès, polices Marelle/Écolier | ✅ | `ClassBoard.config`, `resources/customizations/fonts` |
 | Mode portable | ✅ (logique testée, pas testé sous Windows réel) | `UBSettings::userDataDirectory`, `ClassBoardProfile::isPortable` |
-| CI Linux (compilation + tests) | voir §4 | `.github/workflows/build.yml` |
-| CI Windows (exe/msi/zip/SHA256) | voir §4 (à relancer après push de la refonte UI) | `scripts/windows/*`, `packaging/windows/*` |
+| CI Linux + Windows x64 + GitHub Release auto sur tag `v*` | ✅ (`v0.2.0` publiée, `v0.2.1` en cours) | `.github/workflows/build.yml`, `scripts/windows/*`, `packaging/windows/*` |
 | Documentation | ✅ | `README.md`, `docs/`, `ARCHITECTURE.md`, `ROADMAP.md`… |
 
 Captures réelles mises à jour : `docs/images/` (prises sous Linux/Xvfb 1600×900).
@@ -40,30 +41,24 @@ Captures réelles mises à jour : `docs/images/` (prises sous Linux/Xvfb 1600×9
 ## 3. Ce qui n'a PAS été vérifié
 
 - **Aucun test sur un TBI Epson réel**, ni sur écran tactile/stylet réel.
-- Déploiement MSI sur un serveur **Kwartz** réel.
-- Le rendu Windows de l'interface n'a été vu que via le test de démarrage CI (pas de capture Windows).
+- Déploiement MSI et sauvegarde sur un partage réseau **Kwartz** réel.
 - Import des fichiers **Workspace `.gwb`** : non étudié en pratique (aucun fichier d'exemple).
 
-## 4. État de la CI
+## 4. État de la CI et des Releases
 
 Workflow `Build` (`.github/workflows/build.yml`) : https://github.com/rachid598/ClassBoard/actions
+Releases téléchargeables : https://github.com/rachid598/ClassBoard/releases
 
-- **Référence actuelle : run n°10** (commit `fc9c23f`, 26/11/2026) — **Windows ✓ et Linux ✓**,
-  y compris les tests de démarrage avec le profil par défaut et le profil
-  `tests/profiles/sombre-sans-libelles.ini`. Artefact `ClassBoard-0.1.0-windows-x64`
-  (expire le 26/12/2026) : `ClassBoard-Setup-x64.exe` 146 Mo, `ClassBoard-Setup-x64.msi`
-  159 Mo, `ClassBoard-Portable-x64.zip` 198 Mo, `SHA256SUMS.txt`.
-- **Tag `v0.1.0` non publié** : le proxy git de la session de développement n'autorise que
-  la branche de travail. Le tag existe localement ; à créer par le propriétaire du dépôt
-  (voir §6) pour déclencher la Release automatique.
-- Première exécution Windows entièrement verte : run n°3 (commit `2e0aebc`, 26/11/2026) :
-  Qt 6.8.3 ✓, compilation Release x64 (~7 min avec jom) ✓, assemblage ✓,
-  **test de démarrage ✓** (ClassBoard.exe actif 25 s sur le runner Windows),
-  Inno Setup ✓, WiX 5 ✓, zip ✓, SHA256 ✓, artefact ✓ (≈ 524 Mo pour les 3 paquets).
-- Job Linux du même run : compilation ✓ ; test `classboard_widgets` en échec **attendu**
-  (widgets poussés au commit suivant). Les runs suivants doivent être entièrement verts.
-- Les exécutions s'enchaînent sans annulation (`cancel-in-progress: false`), mais GitHub
-  ne garde qu'une exécution en attente : un nouveau push remplace celle qui attend.
+- **Release `v0.2.0`** (26/11/2026) : publiée et vérifiée verte (Linux ✓, Windows x64 ✓,
+  GitHub Release ✓) avec les 4 paquets : `ClassBoard-Setup-x64.msi`, `ClassBoard-Setup-x64.exe`,
+  `ClassBoard-Portable-x64.zip`, `SHA256SUMS.txt`.
+- **Release `v0.2.1`** (27/11/2026) : déclenchée par le tag `v0.2.1` pour publier le nouveau logo,
+  le mode Bureau avec Annuler, le zoom permanent, le lecteur audio, l'export PDF 1 clic et le choix
+  du dossier Kwartz.
+- **Publication de Release** : pousser un tag `vX.Y.Z` (`git tag vX.Y.Z && git push origin vX.Y.Z`)
+  déclenche automatiquement le job `release` (`softprops/action-gh-release@v2`) qui joint les
+  4 fichiers Windows x64 à la GitHub Release.
+- Les exécutions s'enchaînent sans annulation (`cancel-in-progress: false`).
 - Les modifications de `*.md` et `docs/**` seules ne déclenchent pas la CI.
 
 Corrections déjà faites :
@@ -99,15 +94,10 @@ Corrections déjà faites :
 
 ## 6. Prochaines étapes conseillées (par priorité)
 
-1. Télécharger l'artefact du run n°10, **tester sur un vrai poste Windows** puis sur un TBI.
-2. Publier `v0.1.0` : GitHub › Releases › *Draft a new release* › tag `v0.1.0` sur la branche
-   `claude/gifted-turing-1gc7gi` › *Publish* (ou `git tag v0.1.0 && git push origin v0.1.0`).
-   Le workflow se déclenche sur le tag et joint les 4 fichiers à la Release.
-3. Envisager de renommer la branche de travail en `main` (branche par défaut).
-4. Choix du dossier des documents (lecteur réseau Kwartz) dans « Mon profil ».
-5. Barre de favoris en mode bureau.
-6. Fichier `resources/i18n/ClassBoard_en.ts` pour l'anglais.
-7. Modules disciplinaires web (voir ROADMAP.md §0.3).
+1. Télécharger `v0.2.1` depuis GitHub Releases et **tester sur un vrai TBI Epson** + poste Kwartz.
+2. Envisager de renommer la branche de travail en `main` (branche par défaut).
+3. Fichier `resources/i18n/ClassBoard_en.ts` pour l'anglais (si besoin d'interface bilingue).
+4. Modules disciplinaires web complémentaires (voir `ROADMAP.md` §0.3).
 
 ## 7. Commandes utiles
 
