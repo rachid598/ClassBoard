@@ -2245,6 +2245,41 @@ void UBDocumentController::setupViews()
         connect(mDocumentUI->documentZoomSlider, SIGNAL(valueChanged(int)), this,
                 SLOT(documentZoomSliderValueChanged(int)));
 
+        // ClassBoard : boutons tactiles − et + autour du curseur de taille des miniatures
+        if (QWidget* sliderParent = mDocumentUI->documentZoomSlider->parentWidget())
+        {
+            if (auto* box = qobject_cast<QBoxLayout*>(sliderParent->layout()))
+            {
+                const int idx = box->indexOf(mDocumentUI->documentZoomSlider);
+                if (idx >= 0)
+                {
+                    auto makeZoomBtn = [sliderParent](const QString& text, const QString& tip) {
+                        QToolButton* btn = new QToolButton(sliderParent);
+                        btn->setText(text);
+                        btn->setToolTip(tip);
+                        btn->setFixedSize(34, 34);
+                        btn->setCursor(Qt::PointingHandCursor);
+                        btn->setStyleSheet("QToolButton { font-size: 18px; font-weight: 700; border-radius: 10px; "
+                                           "background: #F1F4F9; border: 1px solid #E6EAF0; }"
+                                           "QToolButton:hover { background: #EEF2FF; color: #4F46E5; }");
+                        return btn;
+                    };
+                    QToolButton* zoomOutBtn = makeZoomBtn(QStringLiteral("−"), tr("Réduire les miniatures"));
+                    QToolButton* zoomInBtn  = makeZoomBtn(QStringLiteral("+"), tr("Agrandir les miniatures"));
+                    connect(zoomOutBtn, &QToolButton::clicked, this, [this]() {
+                        mDocumentUI->documentZoomSlider->setValue(
+                            qMax(mDocumentUI->documentZoomSlider->minimum(), mDocumentUI->documentZoomSlider->value() - 40));
+                    });
+                    connect(zoomInBtn, &QToolButton::clicked, this, [this]() {
+                        mDocumentUI->documentZoomSlider->setValue(
+                            qMin(mDocumentUI->documentZoomSlider->maximum(), mDocumentUI->documentZoomSlider->value() + 40));
+                    });
+                    box->insertWidget(idx, zoomOutBtn);
+                    box->insertWidget(idx + 2, zoomInBtn);
+                }
+            }
+        }
+
         connect(mMainWindow->actionOpen, SIGNAL(triggered()), this, SLOT(openSelectedItem()));
         connect(mMainWindow->actionNewFolder, SIGNAL(triggered()), this, SLOT(createNewDocumentGroup()));
         connect(mMainWindow->actionNewDocument, SIGNAL(triggered()), this, SLOT(createNewDocument()));

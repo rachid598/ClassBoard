@@ -84,6 +84,8 @@ private slots:
     void toggleBackgroundPopover();
     void toggleToolsDrawer();
     void toggleDarkMode();
+    void renameCurrentDocument();
+    void exportCurrentDocumentPdf();
     void showMainMenu();
 
 protected:
@@ -117,7 +119,7 @@ private:
     ClassBoardToolsDrawer* mToolsDrawer = nullptr;
 
     QToolButton* mMenuButton = nullptr;
-    QLabel* mTitleLabel = nullptr;
+    QToolButton* mTitleButton = nullptr;
     QLabel* mSaveDot = nullptr;
 
     QToolButton* mBackgroundsButton = nullptr;
@@ -143,7 +145,11 @@ private:
     QList<QToolButton*> mWidthButtons;
     QPushButton* mClearPageBtn = nullptr;
 
+    QToolButton* mZoomOutBtn = nullptr;
     QLabel* mZoomLabel = nullptr;
+    QToolButton* mZoomInBtn = nullptr;
+    QToolButton* mFitBtn = nullptr;
+    QToolButton* mHandBtn = nullptr;
     QToolButton* mPageLabelBtn = nullptr;
     QToolButton* mNewPageBtn = nullptr;
     QToolButton* mPrevPageBtn = nullptr;

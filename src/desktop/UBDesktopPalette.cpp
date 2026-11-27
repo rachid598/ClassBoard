@@ -58,11 +58,16 @@ UBDesktopPalette::UBDesktopPalette(QWidget *parent, UBRightPalette* _rightPalett
     connect(mActionUniboard, SIGNAL(triggered()), this, SIGNAL(uniboardClick()));
     actions << mActionUniboard;
 
-    // ClassBoard : bascule évidente Souris (naviguer sur Windows) / Écrire / Surligner / Gommer
+    // ClassBoard : bascule évidente Souris (naviguer sur Windows) / Écrire / Surligner / Gommer / Annuler
     actions << UBApplication::mainWindow->actionSelector;
     actions << UBApplication::mainWindow->actionPen;
     actions << UBApplication::mainWindow->actionMarker;
     actions << UBApplication::mainWindow->actionEraser;
+
+    mActionUndo = new QAction(ClassBoardIcons::duotoneIcon("undo", QColor("#475569"), QColor("#F1F5F9")), tr("Annuler"), this);
+    mActionUndo->setToolTip(tr("Annuler le dernier trait sur le bureau (Ctrl+Z)"));
+    connect(mActionUndo, SIGNAL(triggered()), this, SIGNAL(undoClick()));
+    actions << mActionUndo;
 
     if (UBPlatformUtils::hasVirtualKeyboard())
         actions << UBApplication::mainWindow->actionVirtualKeyboard;
@@ -190,6 +195,8 @@ void UBDesktopPalette::maximizeMe()
     actions << UBApplication::mainWindow->actionPen;
     actions << UBApplication::mainWindow->actionMarker;
     actions << UBApplication::mainWindow->actionEraser;
+    if (mActionUndo)
+        actions << mActionUndo;
     if (UBPlatformUtils::hasVirtualKeyboard())
         actions << UBApplication::mainWindow->actionVirtualKeyboard;
 

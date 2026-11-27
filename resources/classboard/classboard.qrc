@@ -82,6 +82,10 @@
     <file>tools/sparkles.svg</file>
     <file>tools/close.svg</file>
     <file>tools/search.svg</file>
+    <file>tools/audio.svg</file>
+    <file>tools/arrow-right.svg</file>
+    <file>tools/rect.svg</file>
+    <file>tools/circle.svg</file>
     <file>classboard.svg</file>
 </qresource>
 <qresource prefix="/images">

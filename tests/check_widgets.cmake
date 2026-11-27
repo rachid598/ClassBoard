@@ -1,7 +1,7 @@
 # Contrôle des applications web ClassBoard de la bibliothèque.
 # Usage : cmake -DLIBRARY_DIR=<resources/library/applications> -P check_widgets.cmake
 
-set(CLASSBOARD_WIDGETS Minuteur.wgt TirageAuSort.wgt Vocabulaire.wgt Etiquettes.wgt)
+set(CLASSBOARD_WIDGETS Minuteur.wgt TirageAuSort.wgt Vocabulaire.wgt Etiquettes.wgt LecteurAudio.wgt)
 
 foreach(widget IN LISTS CLASSBOARD_WIDGETS)
     set(dir "${LIBRARY_DIR}/${widget}")

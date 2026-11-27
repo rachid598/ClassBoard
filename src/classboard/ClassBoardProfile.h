@@ -84,6 +84,11 @@ public:
     static QString interfaceLanguage();
     static void setInterfaceLanguage(const QString& language);
 
+    // --- Stockage (lecteur réseau Kwartz, clé USB...) ----------------------
+    /// Dossier personnalisé pour les cours et documents (vide = dossier local par défaut).
+    static QString documentsDirectory();
+    static void setDocumentsDirectory(const QString& path);
+
     // --- Favoris -----------------------------------------------------------
     /// Favoris personnalisés. Vide = favoris proposés par les disciplines.
     static QStringList customFavorites();

@@ -86,6 +86,8 @@ private:
     QRadioButton* mSize125 = nullptr;
     QRadioButton* mSize150 = nullptr;
     QCheckBox* mShowLabels = nullptr;
+    QLabel* mDocsDirLabel = nullptr;
+    QString mPendingDocsDir;
 
     QPushButton* mPrimaryButton = nullptr;
 };

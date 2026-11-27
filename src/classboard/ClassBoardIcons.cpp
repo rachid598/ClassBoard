@@ -167,6 +167,7 @@ QString ClassBoardIcons::iconNameForFavorite(const QString& favorite)
         {"widget:TirageAuSort", "dice"},
         {"widget:Vocabulaire", "vocabulaire"},
         {"widget:Etiquettes", "etiquettes"},
+        {"widget:LecteurAudio", "audio"},
         {"widget:Stopwatch", "stopwatch"},
         {"widget:Calculator", "calculator"},
         {"widget:GraphMe", "graph"},

@@ -55,6 +55,7 @@ class UBDesktopPalette : public UBActionPalette
         void uniboardClick();
         void customClick();
         void screenClick();
+        void undoClick(); // ClassBoard : annuler le dernier trait en mode bureau
 
 //#ifdef Q_OS_LINUX //TODO: check why this produces an error on linux if uncommented
         void refreshMask();
@@ -81,6 +82,7 @@ private:
         QAction *mDisplaySelectAction;
         QAction *mMaximizeAction;
         QAction *mActionUniboard;
+        QAction *mActionUndo = nullptr; // ClassBoard : annuler un trait sur le bureau
         QAction *mActionCustomSelect;
         QAction* mActionTest;
 

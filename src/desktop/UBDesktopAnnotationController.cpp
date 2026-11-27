@@ -47,6 +47,10 @@
 
 #include "domain/UBGraphicsScene.h"
 #include "domain/UBGraphicsPolygonItem.h"
+#include "domain/UBGraphicsStrokesGroup.h"
+
+#include <QLabel>
+#include <QShortcut>
 
 #include "UBCustomCaptureWindow.h"
 #include "UBDesktopPalette.h"
@@ -123,6 +127,19 @@ UBDesktopAnnotationController::UBDesktopAnnotationController(QObject *parent, UB
     connect(mDesktopPalette, SIGNAL(uniboardClick()), this, SLOT(goToUniboard()));
     connect(mDesktopPalette, SIGNAL(customClick()), this, SLOT(customCapture()));
     connect(mDesktopPalette, SIGNAL(screenClick()), this, SLOT(screenCapture()));
+    connect(mDesktopPalette, SIGNAL(undoClick()), this, SLOT(undoDesktopAnnotation())); // ClassBoard : Annuler
+
+    // ClassBoard : raccourci Ctrl+Z en mode bureau
+    QShortcut* desktopUndoShortcut = new QShortcut(QKeySequence::Undo, mTransparentDrawingView);
+    connect(desktopUndoShortcut, SIGNAL(activated()), this, SLOT(undoDesktopAnnotation()));
+
+    // ClassBoard : bandeau orange discret en haut quand on annote sur Windows
+    mDesktopBanner = new QLabel(tr("Annotation sur le bureau · Cliquez sur « Choisir » pour naviguer sur Windows"), mTransparentDrawingView);
+    mDesktopBanner->setStyleSheet(
+        "QLabel { background: #EA580C; color: #FFFFFF; border-radius: 16px; "
+        "font-size: 13px; font-weight: 700; padding: 7px 18px; }");
+    mDesktopBanner->adjustSize();
+    mDesktopBanner->hide();
     connect(UBApplication::mainWindow->actionPointer, SIGNAL(triggered()), this, SLOT(onToolClicked()));
     connect(UBApplication::mainWindow->actionSelector, SIGNAL(triggered()), this, SLOT(onToolClicked()));
     connect(mDesktopPalette, SIGNAL(maximized()), this, SLOT(onDesktopPaletteMaximized()));
@@ -214,6 +231,9 @@ QPainterPath UBDesktopAnnotationController::desktopPalettePath() const
     if (mDesktopEraserPalette && mDesktopEraserPalette->isVisible()) {
         result.addRect(mDesktopEraserPalette->geometry());
     }
+    if (mDesktopBanner && mDesktopBanner->isVisible()) {
+        result.addRect(mDesktopBanner->geometry());
+    }
 
     return result;
 }
@@ -296,6 +316,24 @@ void UBDesktopAnnotationController::eraseDesktopAnnotations()
     if (mTransparentDrawingScene)
     {
         mTransparentDrawingScene->clearContent(UBGraphicsScene::clearAnnotations);
+    }
+}
+
+void UBDesktopAnnotationController::undoDesktopAnnotation()
+{
+    if (!mTransparentDrawingScene)
+        return;
+
+    // ClassBoard : annule le dernier trait tracé sur le bureau sans toucher à la pile du tableau
+    for (QGraphicsItem* item : mTransparentDrawingScene->items(Qt::DescendingOrder))
+    {
+        if (item && item->type() == UBGraphicsStrokesGroup::Type && !item->parentItem())
+        {
+            mTransparentDrawingScene->removeItem(item);
+            delete item;
+            mTransparentDrawingScene->update();
+            return;
+        }
     }
 }
 
@@ -391,9 +429,26 @@ void UBDesktopAnnotationController::stylusToolChanged(int tool)
 void UBDesktopAnnotationController::updateBackground()
 {
     QBrush newBrush;
+    const bool mouseMode = mIsFullyTransparent
+                           || UBDrawingController::drawingController()->stylusTool() == UBStylusTool::Selector;
 
-    if (mIsFullyTransparent
-            || UBDrawingController::drawingController()->stylusTool() == UBStylusTool::Selector)
+    // ClassBoard : bandeau orange discret visible uniquement quand l'annotation est active
+    if (mDesktopBanner && mTransparentDrawingView)
+    {
+        if (mouseMode)
+        {
+            mDesktopBanner->hide();
+        }
+        else
+        {
+            mDesktopBanner->adjustSize();
+            mDesktopBanner->move((mTransparentDrawingView->width() - mDesktopBanner->width()) / 2, 14);
+            mDesktopBanner->show();
+            mDesktopBanner->raise();
+        }
+    }
+
+    if (mouseMode)
     {
         newBrush = QBrush(Qt::transparent);
 #ifdef UB_REQUIRES_MASK_UPDATE

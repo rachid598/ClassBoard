@@ -41,6 +41,7 @@ namespace
     const char* kToolbarScale      = "Appearance/ToolbarScale";
     const char* kShowToolLabels    = "Appearance/ShowToolLabels";
     const char* kLanguage          = "General/Language";
+    const char* kDocumentsDir      = "Storage/DocumentsDirectory";
     const char* kFavorites         = "Favorites/Custom";
     const char* kShowFavoritesBar  = "Favorites/ShowBar";
 }
@@ -212,6 +213,16 @@ QString ClassBoardProfile::interfaceLanguage()
 void ClassBoardProfile::setInterfaceLanguage(const QString& language)
 {
     setValue(kLanguage, language);
+}
+
+QString ClassBoardProfile::documentsDirectory()
+{
+    return value(kDocumentsDir).toString().trimmed();
+}
+
+void ClassBoardProfile::setDocumentsDirectory(const QString& path)
+{
+    setValue(kDocumentsDir, path.trimmed());
 }
 
 QStringList ClassBoardProfile::customFavorites()

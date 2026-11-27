@@ -27,11 +27,13 @@
 #include "ClassBoardTheme.h"
 #include "ClassBoardToolsDrawer.h"
 
+#include "adaptors/UBExportPDF.h"
 #include "board/UBBoardController.h"
 #include "board/UBBoardPaletteManager.h"
 #include "board/UBDrawingController.h"
 #include "core/UB.h"
 #include "core/UBApplication.h"
+#include "core/UBPersistenceManager.h"
 #include "core/UBSettings.h"
 #include "document/UBDocumentProxy.h"
 #include "domain/UBGraphicsScene.h"
@@ -42,6 +44,7 @@
 #include <QFrame>
 #include <QGraphicsDropShadowEffect>
 #include <QHBoxLayout>
+#include <QInputDialog>
 #include <QLabel>
 #include <QMenu>
 #include <QPainter>
@@ -180,9 +183,14 @@ ClassBoardBoardChrome::ClassBoardBoardChrome(QWidget* container, QObject* parent
         connect(mMenuButton, &QToolButton::clicked, this, &ClassBoardBoardChrome::showMainMenu);
         row->addWidget(mMenuButton);
 
-        mTitleLabel = new QLabel(mDocumentBar);
-        mTitleLabel->setObjectName("cbTitle");
-        row->addWidget(mTitleLabel);
+        mTitleButton = new QToolButton(mDocumentBar);
+        mTitleButton->setObjectName("cbTitleBtn");
+        mTitleButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+        mTitleButton->setCursor(Qt::PointingHandCursor);
+        mTitleButton->setFocusPolicy(Qt::NoFocus);
+        mTitleButton->setToolTip(tr("Cliquer pour renommer ce cours"));
+        connect(mTitleButton, &QToolButton::clicked, this, &ClassBoardBoardChrome::renameCurrentDocument);
+        row->addWidget(mTitleButton);
 
         mSaveDot = new QLabel(mDocumentBar);
         mSaveDot->setObjectName("cbSaveDot");
@@ -355,33 +363,44 @@ ClassBoardBoardChrome::ClassBoardBoardChrome(QWidget* container, QObject* parent
         popCol->addWidget(mClearPageBtn);
     }
 
-    // --- En bas à gauche : zoom discret (affiché seulement quand zoom != 100%) ---
-    mZoomBar = createPill("cbZoomBar", 18);
+    // --- En bas à gauche : zoom et déplacement toujours accessibles au tactile ---
+    mZoomBar = createPill("cbZoomBar", 20);
     {
         QHBoxLayout* row = new QHBoxLayout(mZoomBar);
-        row->setContentsMargins(6, 4, 6, 4);
+        row->setContentsMargins(6, 5, 6, 5);
         row->setSpacing(2);
 
-        QToolButton* zoomOut = createIconButton(mZoomBar, "zoom-out", tr("Zoom arrière"));
-        zoomOut->setFixedSize(34, 34);
-        connect(zoomOut, &QToolButton::clicked, this, []() { UBApplication::boardController->zoomOut(); });
-        row->addWidget(zoomOut);
+        mZoomOutBtn = createIconButton(mZoomBar, "zoom-out", tr("Zoom arrière (réduire le document)"));
+        mZoomOutBtn->setFixedSize(36, 36);
+        connect(mZoomOutBtn, &QToolButton::clicked, this, []() { UBApplication::boardController->zoomOut(); });
+        row->addWidget(mZoomOutBtn);
 
         mZoomLabel = new QLabel(mZoomBar);
         mZoomLabel->setObjectName("cbCounter");
         mZoomLabel->setAlignment(Qt::AlignCenter);
-        mZoomLabel->setMinimumWidth(52);
+        mZoomLabel->setMinimumWidth(48);
         row->addWidget(mZoomLabel);
 
-        QToolButton* zoomIn = createIconButton(mZoomBar, "zoom-in", tr("Zoom avant"));
-        zoomIn->setFixedSize(34, 34);
-        connect(zoomIn, &QToolButton::clicked, this, []() { UBApplication::boardController->zoomIn(); });
-        row->addWidget(zoomIn);
+        mZoomInBtn = createIconButton(mZoomBar, "zoom-in", tr("Zoom avant (agrandir le document)"));
+        mZoomInBtn->setFixedSize(36, 36);
+        connect(mZoomInBtn, &QToolButton::clicked, this, []() { UBApplication::boardController->zoomIn(); });
+        row->addWidget(mZoomInBtn);
 
-        QToolButton* fit = createIconButton(mZoomBar, "fit", tr("Revenir à 100 %"));
-        fit->setFixedSize(34, 34);
-        connect(fit, &QToolButton::clicked, this, []() { UBApplication::boardController->zoomRestore(); });
-        row->addWidget(fit);
+        mFitBtn = createIconButton(mZoomBar, "fit", tr("Ajuster à 100 %"));
+        mFitBtn->setFixedSize(36, 36);
+        connect(mFitBtn, &QToolButton::clicked, this, []() {
+            UBApplication::boardController->zoomRestore();
+            UBApplication::boardController->centerRestore();
+        });
+        row->addWidget(mFitBtn);
+
+        row->addWidget(hairlineV(mZoomBar));
+
+        mHandBtn = createIconButton(mZoomBar, "hand", tr("Déplacer la page (main)"));
+        mHandBtn->setCheckable(true);
+        mHandBtn->setFixedSize(36, 36);
+        connect(mHandBtn, &QToolButton::clicked, this, [this]() { selectTool(UBStylusTool::Hand); });
+        row->addWidget(mHandBtn);
     }
 
     // --- En bas à droite : pagination compacte (< 1 / 1 > + Page) ---------------
@@ -560,6 +579,12 @@ void ClassBoardBoardChrome::applyStyles()
         }
         QToolButton#cbLogoBtn:hover { background: %5; }
 
+        QToolButton#cbTitleBtn {
+            background: transparent; border: none; border-radius: 12px; color: %3;
+            font-size: 14px; font-weight: 700; padding: 6px 10px;
+        }
+        QToolButton#cbTitleBtn:hover { background: %5; }
+
         QToolButton#cbTopBtn {
             background: transparent; border: none; border-radius: 14px; color: %3;
             font-size: 13px; font-weight: 600; padding: 8px 12px; min-height: 22px;
@@ -577,6 +602,7 @@ void ClassBoardBoardChrome::applyStyles()
             background: transparent; border: none; border-radius: 14px; color: %3;
         }
         QToolButton#cbIconBtn:hover, QToolButton#cbMiniBtn:hover { background: %5; }
+        QToolButton#cbIconBtn:checked { background: %7; color: %6; }
         QToolButton#cbIconBtn:disabled, QToolButton#cbMiniBtn:disabled { color: %4; }
 
         QToolButton#cbRailBtn {
@@ -659,6 +685,10 @@ void ClassBoardBoardChrome::rebuildToolIcons()
     mMoreButton->setIcon(ClassBoardIcons::icon("more", ClassBoardIcons::Style::Toolbar));
     mUndoBtn->setIcon(ClassBoardIcons::icon("undo", ClassBoardIcons::Style::Toolbar));
     mRedoBtn->setIcon(ClassBoardIcons::icon("redo", ClassBoardIcons::Style::Toolbar));
+    mZoomOutBtn->setIcon(ClassBoardIcons::icon("zoom-out", ClassBoardIcons::Style::Toolbar));
+    mZoomInBtn->setIcon(ClassBoardIcons::icon("zoom-in", ClassBoardIcons::Style::Toolbar));
+    mFitBtn->setIcon(ClassBoardIcons::icon("fit", ClassBoardIcons::Style::Toolbar));
+    mHandBtn->setIcon(ClassBoardIcons::icon("hand", ClassBoardIcons::Style::Toolbar));
     mPrevPageBtn->setIcon(ClassBoardIcons::icon("previous", ClassBoardIcons::Style::Toolbar));
     mNextPageBtn->setIcon(ClassBoardIcons::icon("next", ClassBoardIcons::Style::Toolbar));
 
@@ -776,14 +806,13 @@ void ClassBoardBoardChrome::setVisible(bool visible)
 {
     mVisible = visible;
 
-    for (QFrame* pill : {mDocumentBar, mModeBar, mToolRail, mPageBar})
+    for (QFrame* pill : {mDocumentBar, mModeBar, mToolRail, mZoomBar, mPageBar})
         pill->setVisible(visible);
 
     if (!visible)
     {
         closePopovers();
         mToolPopover->hide();
-        mZoomBar->hide();
     }
     else
     {
@@ -833,10 +862,10 @@ void ClassBoardBoardChrome::refreshDocumentInfo()
         return;
 
     const QString name = board->selectedDocument()->name();
-    const QString display = name.isEmpty() ? tr("Nouveau tableau") : name;
-    if (mTitleLabel->text() != display)
+    const QString display = name.isEmpty() ? tr("Nouveau cours") : name;
+    if (mTitleButton->text() != display)
     {
-        mTitleLabel->setText(display);
+        mTitleButton->setText(display);
         mDocumentBar->adjustSize();
     }
 
@@ -860,8 +889,7 @@ void ClassBoardBoardChrome::refreshZoom()
     const qreal zoom = UBApplication::boardController ? UBApplication::boardController->currentZoom() : 1.0;
     const int pct = qRound(zoom * 100);
     mZoomLabel->setText(QString("%1 %").arg(pct));
-    // Bas gauche entièrement libre par défaut : le zoom n'apparaît que si différent de 100 %
-    mZoomBar->setVisible(mVisible && pct != 100);
+    mZoomBar->setVisible(mVisible);
     if (mZoomBar->isVisible() && mArea.isValid())
     {
         mZoomBar->adjustSize();
@@ -894,6 +922,8 @@ void ClassBoardBoardChrome::stylusToolChanged(int tool)
     mMarkerBtn->setChecked(tool == UBStylusTool::Marker);
     mEraserBtn->setChecked(tool == UBStylusTool::Eraser);
     mTextBtn->setChecked(tool == UBStylusTool::Text);
+    if (mHandBtn)
+        mHandBtn->setChecked(tool == UBStylusTool::Hand);
 
     const bool drawing = (tool == UBStylusTool::Pen || tool == UBStylusTool::Marker || tool == UBStylusTool::Line);
     const bool erasing = (tool == UBStylusTool::Eraser);
@@ -1008,12 +1038,57 @@ void ClassBoardBoardChrome::toggleDarkMode()
     reloadFromProfile();
 }
 
+void ClassBoardBoardChrome::renameCurrentDocument()
+{
+    closePopovers();
+    UBBoardController* board = UBApplication::boardController;
+    if (!board || !board->selectedDocument())
+        return;
+
+    auto doc = board->selectedDocument();
+    bool ok = false;
+    const QString name = QInputDialog::getText(
+        UBApplication::mainWindow,
+        tr("Renommer ce cours"),
+        tr("Nom du cours (ex. Anglais 4e B — Unit 3) :"),
+        QLineEdit::Normal,
+        doc->name(),
+        &ok).trimmed();
+
+    if (!ok || name.isEmpty() || name == doc->name())
+        return;
+
+    doc->setMetaData(UBSettings::documentName, name);
+    UBPersistenceManager::persistenceManager()->persistDocumentMetadata(doc);
+    refreshDocumentInfo();
+}
+
+void ClassBoardBoardChrome::exportCurrentDocumentPdf()
+{
+    closePopovers();
+    UBBoardController* board = UBApplication::boardController;
+    if (!board || !board->selectedDocument())
+        return;
+
+    board->persistCurrentScene(false, true);
+    UBExportPDF exporter;
+    exporter.persist(board->selectedDocument());
+}
+
 void ClassBoardBoardChrome::showMainMenu()
 {
     closePopovers();
 
     QMenu menu(mContainer);
     UBMainWindow* w = UBApplication::mainWindow;
+
+    QAction* renameAct = menu.addAction(ClassBoardIcons::icon("rename", ClassBoardIcons::Style::Toolbar), tr("Renommer ce cours…"));
+    connect(renameAct, &QAction::triggered, this, &ClassBoardBoardChrome::renameCurrentDocument);
+
+    QAction* exportPdfAct = menu.addAction(ClassBoardIcons::icon("export", ClassBoardIcons::Style::Toolbar), tr("Exporter en PDF (Pronote / ENT)…"));
+    connect(exportPdfAct, &QAction::triggered, this, &ClassBoardBoardChrome::exportCurrentDocumentPdf);
+
+    menu.addSeparator();
 
     QAction* profileAct = menu.addAction(QIcon(":/images/ClassBoard.png"), tr("Mes matières et préférences…"));
     connect(profileAct, &QAction::triggered, this, []() {
@@ -1038,12 +1113,6 @@ void ClassBoardBoardChrome::showMainMenu()
 
     QAction* webAct = menu.addAction(tr("Navigateur Web intégré"));
     connect(webAct, &QAction::triggered, w->actionWeb, &QAction::trigger);
-
-    QAction* zoomInAct = menu.addAction(tr("Zoom avant"));
-    connect(zoomInAct, &QAction::triggered, this, []() { UBApplication::boardController->zoomIn(); });
-
-    QAction* zoomOutAct = menu.addAction(tr("Zoom arrière"));
-    connect(zoomOutAct, &QAction::triggered, this, []() { UBApplication::boardController->zoomOut(); });
 
     menu.addSeparator();
 

@@ -974,6 +974,16 @@ QString UBSettings::userDataDirectory()
             qCritical() << "Impossible to create portable data directory " << dataDirPath;
         }
 
+        // ClassBoard : dossier personnalisé (ex. lecteur réseau Kwartz) choisi dans « Mes matières et préférences »
+        const QString customDir = ClassBoardProfile::documentsDirectory();
+        if (!customDir.isEmpty()) {
+            dataDirPath = UBFileSystemUtils::normalizeFilePath(customDir);
+            if (checkDirectory(dataDirPath))
+                return dataDirPath;
+            qWarning() << "Impossible d'utiliser le dossier personnalisé ClassBoard :" << dataDirPath;
+            dataDirPath.clear();
+        }
+
         if (getAppSettings() && getAppSettings()->contains("App/DataDirectory")) {
             qDebug() << "getAppSettings()->contains(App/DataDirectory):" << getAppSettings()->contains("App/DataDirectory");
             dataDirPath = getAppSettings()->value("App/DataDirectory").toString();

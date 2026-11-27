@@ -43,6 +43,7 @@ namespace
     const QString Draw        = QStringLiteral("widget:TirageAuSort");
     const QString Vocabulaire = QStringLiteral("widget:Vocabulaire");
     const QString Etiquettes  = QStringLiteral("widget:Etiquettes");
+    const QString Audio       = QStringLiteral("widget:LecteurAudio");
     const QString Stopwatch   = QStringLiteral("widget:Stopwatch");
     const QString Calculator  = QStringLiteral("widget:Calculator");
     const QString Graph       = QStringLiteral("widget:GraphMe");
@@ -69,7 +70,7 @@ namespace
         };
 
         add("general", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Général / polyvalent"),
-            {Timer, Draw, Mask, Spotlight, Vocabulaire, Etiquettes, Ruler, Magnifier});
+            {Timer, Draw, Mask, Spotlight, Vocabulaire, Etiquettes, Audio, Ruler, Magnifier});
         add("math", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Mathématiques"),
             {Ruler, Triangle, Protractor, Compass, Axes, Graph, Calculator});
         add("francais", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Français"),
@@ -77,9 +78,9 @@ namespace
         add("histoire-geo", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Histoire-géographie / EMC"),
             {Mask, Spotlight, Magnifier, Timer, Draw, Ruler});
         add("anglais", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Anglais"),
-            {Vocabulaire, Timer, Draw, Mask, Etiquettes, Spotlight});
+            {Vocabulaire, Audio, Timer, Draw, Mask, Etiquettes, Spotlight});
         add("langues", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Autres langues vivantes"),
-            {Vocabulaire, Timer, Draw, Mask, Etiquettes, Spotlight});
+            {Vocabulaire, Audio, Timer, Draw, Mask, Etiquettes, Spotlight});
         add("physique-chimie", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Physique-chimie"),
             {Ruler, Protractor, Axes, Graph, Calculator, Stopwatch});
         add("svt", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "SVT"),
@@ -89,7 +90,7 @@ namespace
         add("arts-plastiques", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Arts plastiques"),
             {Magnifier, Mask, Spotlight, Ruler, Compass, Timer});
         add("musique", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Éducation musicale"),
-            {Timer, Stopwatch, Clock, Mask, Draw});
+            {Audio, Timer, Stopwatch, Clock, Mask, Draw});
         add("eps", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "EPS"),
             {Stopwatch, Timer, Draw, Clock});
         add("segpa", QT_TRANSLATE_NOOP("ClassBoardDisciplines", "SEGPA"),
@@ -207,6 +208,7 @@ QString ClassBoardDisciplines::favoriteDisplayName(const QString& favorite)
         {"widget:TirageAuSort",            QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Tirage au sort")},
         {"widget:Vocabulaire",             QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Vocabulaire")},
         {"widget:Etiquettes",              QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Étiquettes")},
+        {"widget:LecteurAudio",            QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Lecteur audio")},
         {"widget:Stopwatch",               QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Chronomètre")},
         {"widget:Calculator",              QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Calculatrice")},
         {"widget:GraphMe",                 QT_TRANSLATE_NOOP("ClassBoardDisciplines", "Graphique")},

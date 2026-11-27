@@ -206,8 +206,19 @@ private slots:
     {
         QCOMPARE(ClassBoardDisciplines::favoriteDisplayName("widget:Vocabulaire"), QString("Vocabulaire"));
         QCOMPARE(ClassBoardDisciplines::favoriteDisplayName("widget:Etiquettes"), QString("Étiquettes"));
+        QCOMPARE(ClassBoardDisciplines::favoriteDisplayName("widget:LecteurAudio"), QString("Lecteur audio"));
         QVERIFY(ClassBoardDisciplines::byId("anglais").favorites.contains("widget:Vocabulaire"));
+        QVERIFY(ClassBoardDisciplines::byId("anglais").favorites.contains("widget:LecteurAudio"));
         QVERIFY(ClassBoardDisciplines::byId("francais").favorites.contains("widget:Etiquettes"));
+    }
+
+    void documentsDirectoryPersistsAndResets()
+    {
+        QVERIFY(ClassBoardProfile::documentsDirectory().isEmpty());
+        ClassBoardProfile::setDocumentsDirectory("  Z:/Cours/ClassBoard  ");
+        QCOMPARE(ClassBoardProfile::documentsDirectory(), QString("Z:/Cours/ClassBoard"));
+        ClassBoardProfile::setDocumentsDirectory("");
+        QVERIFY(ClassBoardProfile::documentsDirectory().isEmpty());
     }
 };
 

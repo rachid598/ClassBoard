@@ -110,6 +110,7 @@ class UBDesktopAnnotationController : public QObject
         void desktopMarkerActionToggled(bool checked);
         void desktopEraserActionToggled(bool checked);
         void eraseDesktopAnnotations();
+        void undoDesktopAnnotation(); // ClassBoard : annuler le dernier trait en mode bureau
         void penActionPressed();
         void markerActionPressed();
         void eraserActionPressed();
@@ -161,6 +162,7 @@ class UBDesktopAnnotationController : public QObject
         int mDesktopStylusTool;
 
         QPixmap mMask;
+        class QLabel* mDesktopBanner = nullptr; // ClassBoard : bandeau orange discret quand l'annotation est active
 
 };
 

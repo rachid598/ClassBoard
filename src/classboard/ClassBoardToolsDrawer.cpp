@@ -26,6 +26,7 @@
 #include "ClassBoardProfile.h"
 #include "ClassBoardTheme.h"
 
+#include "adaptors/UBExportPDF.h"
 #include "board/UBBoardController.h"
 #include "board/UBDrawingController.h"
 #include "core/UBApplication.h"
@@ -177,24 +178,39 @@ void ClassBoardToolsDrawer::buildCatalog()
     add("vocabulaire", tr("Vocabulaire"), "vocabulaire flashcards cartes anglais langue traduction memoire", sLangues,
         "vocabulaire", QColor("#4F46E5"), QColor("#EEF2FF"),
         ActionKind::Widget, "Vocabulaire", {"anglais", "langues", "francais", "general", "segpa", "ulis"});
+    add("audio", tr("Lecteur audio"), "audio mp3 wav ecoute oral anglais langue musique vitesse boucle", sLangues,
+        "audio", QColor("#0891B2"), QColor("#CFFAFE"),
+        ActionKind::Widget, "LecteurAudio", {"anglais", "langues", "musique", "francais", "general", "classe"});
     add("etiquettes", tr("Étiquettes"), "etiquettes mots phrase ordre grammaire sujet verbe cod anglais francais", sLangues,
-        "etiquettes", QColor("#0891B2"), QColor("#CFFAFE"),
+        "etiquettes", QColor("#0D9488"), QColor("#CCFBF1"),
         ActionKind::Widget, "Etiquettes", {"anglais", "langues", "francais", "general", "segpa", "ulis"});
     add("magnifier", tr("Loupe"), "loupe agrandir zoom texte detail", sLangues,
         "magnifier", QColor("#0284C7"), QColor("#E0F2FE"),
         ActionKind::NativeTool, "openboardtool://magnifier", {"francais", "histoire-geo", "svt", "arts-plastiques", "segpa", "ulis", "classe"});
 
-    // Insérer & présenter
+    // Insérer, formes & présenter
     add("image", tr("Image"), "image photo illustrer inserer", sInserer,
         "image", QColor("#0284C7"), QColor("#E0F2FE"),
         ActionKind::ImportImage, "", {"anglais", "langues", "francais", "classe", "histoire-geo", "svt", "general"});
     add("pdf", tr("Importer PDF"), "pdf document fiche exercice manuel", sInserer,
         "pdf", QColor("#DC2626"), QColor("#FEE2E2"),
         ActionKind::ImportPdf, "", {"anglais", "langues", "francais", "classe", "histoire-geo", "math", "general"});
+    add("export-pdf", tr("Exporter PDF"), "exporter pdf enregistrer pronote ent cours", sInserer,
+        "export", QColor("#4F46E5"), QColor("#EEF2FF"),
+        ActionKind::ExportPdf, "", {"anglais", "langues", "francais", "classe", "histoire-geo", "math", "general"});
+    add("arrow", tr("Flèche"), "fleche relier montrer forme", sInserer,
+        "arrow-right", QColor("#2563EB"), QColor("#DBEAFE"),
+        ActionKind::ShapeSvg, "blue_arrow_right.svg", {"anglais", "langues", "francais", "classe", "histoire-geo", "svt", "general"});
+    add("rect", tr("Encadré"), "encadre rectangle cadre regle grammaire forme", sInserer,
+        "rect", QColor("#7C3AED"), QColor("#EDE9FE"),
+        ActionKind::ShapeSvg, "nofill_rectangle_rnd.svg", {"anglais", "langues", "francais", "classe", "histoire-geo", "math", "general"});
+    add("circle", tr("Cercle"), "cercle entourer forme", sInserer,
+        "circle", QColor("#059669"), QColor("#D1FAE5"),
+        ActionKind::ShapeSvg, "nofill_disk.svg", {"anglais", "francais", "classe", "math", "general"});
     add("capture", tr("Capture"), "capture ecran decouper zone", sInserer,
         "capture", QColor("#EA580C"), QColor("#FFEDD5"),
         ActionKind::Capture, "", {"anglais", "langues", "francais", "classe", "general"});
-    add("line", tr("Trait droit"), "ligne trait fleche souligner", sInserer,
+    add("line", tr("Trait droit"), "ligne trait souligner", sInserer,
         "line", QColor("#475569"), QColor("#F1F5F9"),
         ActionKind::LineTool, "", {"francais", "classe", "math", "histoire-geo", "general"});
     add("laser", tr("Laser"), "laser pointeur montrer presenter", sInserer,
@@ -463,6 +479,19 @@ void ClassBoardToolsDrawer::launchEntry(const ToolEntry& entry)
         }
         break;
 
+    case ActionKind::ShapeSvg:
+        if (board)
+        {
+            const QString path = UBSettings::settings()->applicationShapeLibraryDirectory()
+                                 + "/" + entry.target;
+            if (QFile::exists(path))
+            {
+                board->downloadURL(QUrl::fromLocalFile(path));
+                UBDrawingController::drawingController()->setStylusTool(UBStylusTool::Selector);
+            }
+        }
+        break;
+
     case ActionKind::Capture:
         if (w && w->actionCapture)
             w->actionCapture->trigger();
@@ -480,6 +509,18 @@ void ClassBoardToolsDrawer::launchEntry(const ToolEntry& entry)
         if (w && w->actionImportPage)
             w->actionImportPage->trigger();
         break;
+
+    case ActionKind::ExportPdf:
+        hide();
+        emit closed();
+        if (board && board->selectedDocument())
+        {
+            board->persistCurrentScene(false, true);
+            UBExportPDF exporter;
+            exporter.persist(board->selectedDocument());
+        }
+        emit toolLaunched();
+        return;
 
     case ActionKind::ImportImage:
     {

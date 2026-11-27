@@ -58,9 +58,11 @@ private:
     {
         NativeTool,
         Widget,
+        ShapeSvg,
         Capture,
         ImportImage,
         ImportPdf,
+        ExportPdf,
         LineTool,
         LaserTool
     };

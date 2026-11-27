@@ -28,6 +28,7 @@
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QDir>
+#include <QFileDialog>
 #include <QGraphicsDropShadowEffect>
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -362,7 +363,41 @@ QWidget* ClassBoardSetupDialog::buildAppearancePage()
 
     layout->addLayout(columns, 1);
 
-    QLabel* where = new QLabel(tr("Profil enregistré localement : %1")
+    // Dossier de sauvegarde des cours (ex. lecteur réseau Kwartz)
+    QLabel* storageTitle = new QLabel(tr("Dossier de sauvegarde des cours (lecteur réseau Kwartz, clé USB…)"), page);
+    storageTitle->setObjectName("cbSection");
+    layout->addWidget(storageTitle);
+
+    QHBoxLayout* storageRow = new QHBoxLayout();
+    storageRow->setSpacing(10);
+    mDocsDirLabel = new QLabel(page);
+    mDocsDirLabel->setObjectName("cbHint");
+    mDocsDirLabel->setWordWrap(true);
+    storageRow->addWidget(mDocsDirLabel, 1);
+
+    QPushButton* chooseDirBtn = new QPushButton(tr("Choisir un dossier…"), page);
+    chooseDirBtn->setCursor(Qt::PointingHandCursor);
+    connect(chooseDirBtn, &QPushButton::clicked, this, [this]() {
+        const QString initial = mPendingDocsDir.isEmpty() ? QDir::homePath() : mPendingDocsDir;
+        const QString picked = QFileDialog::getExistingDirectory(this, tr("Choisir le dossier des cours ClassBoard"), initial);
+        if (!picked.isEmpty())
+        {
+            mPendingDocsDir = picked;
+            mDocsDirLabel->setText(tr("%1 (actif au prochain démarrage)").arg(QDir::toNativeSeparators(picked)));
+        }
+    });
+    storageRow->addWidget(chooseDirBtn);
+
+    QPushButton* defaultDirBtn = new QPushButton(tr("Par défaut"), page);
+    defaultDirBtn->setCursor(Qt::PointingHandCursor);
+    connect(defaultDirBtn, &QPushButton::clicked, this, [this]() {
+        mPendingDocsDir.clear();
+        mDocsDirLabel->setText(tr("Dossier local par défaut (actif au prochain démarrage)"));
+    });
+    storageRow->addWidget(defaultDirBtn);
+    layout->addLayout(storageRow);
+
+    QLabel* where = new QLabel(tr("Profil enregistré : %1")
                                    .arg(QDir::toNativeSeparators(ClassBoardProfile::profileFile())), page);
     where->setObjectName("cbHint");
     where->setWordWrap(true);
@@ -468,6 +503,14 @@ void ClassBoardSetupDialog::loadFromProfile()
     mSize150->setChecked(scale >= 140);
 
     mShowLabels->setChecked(ClassBoardProfile::showToolLabels());
+
+    mPendingDocsDir = ClassBoardProfile::documentsDirectory();
+    if (mDocsDirLabel)
+    {
+        mDocsDirLabel->setText(mPendingDocsDir.isEmpty()
+                               ? tr("Dossier local par défaut")
+                               : QDir::toNativeSeparators(mPendingDocsDir));
+    }
 }
 
 void ClassBoardSetupDialog::updateState()
@@ -511,6 +554,7 @@ void ClassBoardSetupDialog::save()
             scale = 150;
         ClassBoardProfile::setToolbarScale(scale);
         ClassBoardProfile::setShowToolLabels(mShowLabels->isChecked());
+        ClassBoardProfile::setDocumentsDirectory(mPendingDocsDir);
     }
 
     ClassBoardProfile::setFirstRunCompleted(true);

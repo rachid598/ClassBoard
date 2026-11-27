@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:ub="http://uniboard.mnemis.com/widgets"
+        id="classboard.lecteuraudio"
+        version="1.0"
+        width="460"
+        height="270"
+        ub:resizable="true">
+
+    <name>Lecteur audio</name>
+    <author>Contributeurs ClassBoard</author>
+    <description>Lecteur audio pédagogique pour les langues et la musique : retour -5 s, vitesse réglable (0,75x à 1,25x) et boucle A-B. Fonctionne hors connexion.</description>
+    <license href="https://www.gnu.org/licenses/gpl-3.0.html">GPL-3.0</license>
+
+    <content src="index.html"/>
+</widget>
