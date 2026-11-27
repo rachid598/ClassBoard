@@ -3,6 +3,17 @@
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 Versions selon [SemVer](https://semver.org/lang/fr/).
 
+## [0.2.2] — 2026-11-27
+
+### Corrigé / Nettoyé
+- **Mode Bureau — suppression de l'ancien tiroir gris d'OpenBoard** : les anciens panneaux
+  latéraux (`UBRightPalette` / `UBLeftPalette`) sont désormais masqués en mode Bureau et
+  en mode Documents comme sur le Tableau ; plus aucun onglet gris ne dépasse sur le bord
+  droit de Windows.
+- **Mode Bureau — palettes de couleurs et d'épaisseurs modernisées** : suppression du vieux
+  fond gris en dur dans `UBDesktopPropertyPalette` et synchronisation en direct avec le
+  thème actif (Clair / Ardoise sombre).
+
 ## [0.2.1] — 2026-11-27
 
 Nouvelle identité visuelle (logo 2026) et ajouts issus des premiers tests terrain :

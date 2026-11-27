@@ -346,6 +346,13 @@ UBBoardView* UBDesktopAnnotationController::drawingView()
 
 void UBDesktopAnnotationController::showWindow()
 {
+    // ClassBoard : synchroniser le fond des palettes bureau avec le thème actif (clair / ardoise)
+    const QBrush paletteBrush(UBSettings::settings()->opaquePaletteColor);
+    mDesktopPalette->setBackgroundBrush(paletteBrush);
+    mDesktopPenPalette->setBackgroundBrush(paletteBrush);
+    mDesktopMarkerPalette->setBackgroundBrush(paletteBrush);
+    mDesktopEraserPalette->setBackgroundBrush(paletteBrush);
+
     mDesktopPalette->setDisplaySelectButtonVisible(true);
 
     connect(UBApplication::applicationController, SIGNAL(desktopMode(bool))

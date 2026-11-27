@@ -1,6 +1,6 @@
 VERSION_MAJ   = 0
 VERSION_MIN   = 2
-VERSION_PATCH = 1
+VERSION_PATCH = 2
 VERSION_TYPE = r        # a = alpha, b = beta, rc = release candidate, r = release, other => error
 VERSION_BUILD = 261127  # for non-release builds
-# ClassBoard 0.2.1 — basé sur OpenBoard 1.7.7 (voir README.md)
+# ClassBoard 0.2.2 — basé sur OpenBoard 1.7.7 (voir README.md)

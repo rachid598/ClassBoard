@@ -801,12 +801,11 @@ void UBBoardPaletteManager::changeMode(eUBDockPaletteWidgetMode newMode, bool is
 
                 }
 
-                mLeftPalette->setVisible(leftPaletteVisible);
-                mRightPalette->setVisible(rightPaletteVisible);
-#ifdef Q_OS_WIN
-                if (rightPaletteVisible && UBSettings::settings()->appToolBarPositionedAtTop->get().toBool())
-                    mRightPalette->setAdditionalVOffset(30);
-#endif
+                // ClassBoard : masquer les anciens panneaux latéraux gris d'OpenBoard en mode bureau
+                Q_UNUSED(leftPaletteVisible);
+                Q_UNUSED(rightPaletteVisible);
+                mLeftPalette->setVisible(false);
+                mRightPalette->setVisible(false);
 
                 if(!isInit)
                     UBApplication::applicationController->uninotesController()->TransparentWidgetResized();
@@ -841,8 +840,9 @@ void UBBoardPaletteManager::changeMode(eUBDockPaletteWidgetMode newMode, bool is
 
         case eUBDockPaletteWidget_DOCUMENT:
             {
-                mLeftPalette->setVisible(leftPaletteVisible);
-                mRightPalette->setVisible(rightPaletteVisible);
+                // ClassBoard : masquer les anciens panneaux latéraux gris d'OpenBoard en mode documents
+                mLeftPalette->setVisible(false);
+                mRightPalette->setVisible(false);
                 mLeftPalette->assignParent(UBApplication::documentController->controlView());
                 mRightPalette->assignParent(UBApplication::documentController->controlView());
                 if (UBPlatformUtils::hasVirtualKeyboard()

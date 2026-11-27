@@ -42,12 +42,18 @@ UBDesktopPropertyPalette::UBDesktopPropertyPalette(QWidget *parent, UBRightPalet
     :UBPropertyPalette(Qt::Horizontal, parent)
     ,rightPalette(_rightPalette)
 {
-    setStyleSheet("QWidget { background : qlineargradient(x1:0, y1:0.49, x2:0, y2:0.5, stop:0 #c3c3c3, stop:1 #b4b4b4);}");
+    // ClassBoard : fond transparent pour laisser la pilule moderne de UBFloatingPalette apparaître
+    setStyleSheet(
+        "QWidget { background: transparent; }"
+        "QToolButton { border: none; border-radius: 10px; padding: 4px; background: transparent; }"
+        "QToolButton:hover { background: rgba(79, 70, 229, 0.12); }"
+        "QToolButton:checked { background: rgba(79, 70, 229, 0.22); }");
 }
 
 int UBDesktopPropertyPalette::getParentRightOffset()
 {
-    return rightPalette->width();
+    // ClassBoard : ne pas décaler si l'ancien panneau latéral est masqué
+    return (rightPalette && rightPalette->isVisible()) ? rightPalette->width() : 0;
 }
 
 

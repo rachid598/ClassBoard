@@ -52,9 +52,10 @@ Releases téléchargeables : https://github.com/rachid598/ClassBoard/releases
 - **Release `v0.2.0`** (26/11/2026) : publiée et vérifiée verte (Linux ✓, Windows x64 ✓,
   GitHub Release ✓) avec les 4 paquets : `ClassBoard-Setup-x64.msi`, `ClassBoard-Setup-x64.exe`,
   `ClassBoard-Portable-x64.zip`, `SHA256SUMS.txt`.
-- **Release `v0.2.1`** (27/11/2026) : déclenchée par le tag `v0.2.1` pour publier le nouveau logo,
-  le mode Bureau avec Annuler, le zoom permanent, le lecteur audio, l'export PDF 1 clic et le choix
-  du dossier Kwartz.
+- **Release `v0.2.1`** (27/11/2026) : publiée et vérifiée verte (Linux ✓, Windows x64 ✓,
+  GitHub Release ✓).
+- **Release `v0.2.2`** (27/11/2026) : suppression de l'ancien tiroir gris `UBRightPalette`
+  en mode Bureau et modernisation des sous-palettes couleurs/épaisseurs du mode Bureau.
 - **Publication de Release** : pousser un tag `vX.Y.Z` (`git tag vX.Y.Z && git push origin vX.Y.Z`)
   déclenche automatiquement le job `release` (`softprops/action-gh-release@v2`) qui joint les
   4 fichiers Windows x64 à la GitHub Release.

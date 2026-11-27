@@ -246,7 +246,8 @@ QPoint UBDesktopPalette::buttonPos(QAction *action)
 
 int UBDesktopPalette::getParentRightOffset()
 {
-    return rightPalette->width();
+    // ClassBoard : ne pas décaler si l'ancien panneau latéral est masqué
+    return (rightPalette && rightPalette->isVisible()) ? rightPalette->width() : 0;
 }
 
 void UBDesktopPalette::parentResized()
